@@ -487,11 +487,11 @@
 			isa = PBXGroup;
 			children = (
 				2BF0E4540F73119C0095A926 /* Documentation */,
-				2B246B230F8AE20300A7D55D /* Testing */,
 				B8C9740D0E8A196E007D16AD /* Map */,
 				B83E67570E80F3FB001663B6 /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				2B246B230F8AE20300A7D55D /* Testing */,
 				2B2BD42E0F79A9A500B8B9A7 /* Static Library Build */,
 				32CA4F630368D1EE00C91783 /* MapView_Prefix.pch */,
 			);
