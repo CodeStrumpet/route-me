@@ -26,3 +26,6 @@ Icon?
 .Trashes
 
 # Project-specific ignores
+
+
+.svn
