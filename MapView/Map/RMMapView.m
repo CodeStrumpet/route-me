@@ -55,6 +55,12 @@
 @synthesize enableZoom;
 @synthesize enableRotate;
 
+@synthesize userDot;
+@synthesize locationManager;
+@synthesize showsUserLocation;
+@synthesize userLocation;
+@synthesize radius;
+
 #pragma mark --- begin constants ----
 #define kDefaultDecelerationFactor .88f
 #define kMinDecelerationDelta 0.01f
@@ -83,6 +89,12 @@
 	self.backgroundColor = [UIColor grayColor];
 	
 	_constrainMovement=NO;
+    
+    self.locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    locationManager.distanceFilter = 1.0f;
+	showsUserLocation = NO;
 	
 //	[[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
@@ -134,6 +146,9 @@
 -(void) dealloc
 {
 	LogMethod();
+    showsUserLocation = NO;
+    [locationManager release];
+    [self.userDot release]; 
 	self.contents = nil;
 	[super dealloc];
 }
@@ -753,5 +768,58 @@
 
  	if (_delegateHasAfterMapRotate) [delegate afterMapRotate: self toAngle: rotation];
 }
+
+#pragma mark - 
+#pragma mark CLLocationManagerDelegate Methods 
+-(void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation 
+{ 
+    NSDate* eventDate = newLocation.timestamp;
+    NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
+    if (abs(howRecent) < 20.0){
+        userLocation.latitude = newLocation.coordinate.latitude;
+        userLocation.longitude = newLocation.coordinate.longitude;
+        self.radius = newLocation.horizontalAccuracy;
+        [self addUserMarker];
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error 
+{
+    NSString *errorType = (error.code == kCLErrorDenied) ? @"Access Denied" : @"Unknown Error";
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error getting Location" message:errorType delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles:nil]; 
+    [alert show]; 
+    [alert release];
+}
+
+-(void)setShowsUserLocation:(BOOL)shows {
+   // if(shows){
+        [self.locationManager startUpdatingLocation];
+    //}
+   // if(shows){
+    //    [self.locationManager stopUpdatingLocation];
+        
+   // }
+}
+
+
+- (void)addUserMarker
+{
+//        CLLocationCoordinate2D markerPosition;
+//        markerPosition.latitude = userLocation.latitude;
+//        markerPosition.longitude = userLocation.longitude;
+        
+        if(self.userDot == nil)
+        {
+            RMUserLocationMarker *newMarker = [[RMUserLocationMarker alloc] initWithMarkerManager:self.contents pinLocation:self.userLocation];
+            self.userDot = newMarker;
+            [self.contents.markerManager addMarker:self.userDot AtLatLong:self.userLocation];
+            [newMarker release];
+        }
+        else
+        {
+            //[self.userDot updateLocation:markerPosition newRadius:self.radius]; 
+        }
+}
+
 
 @end

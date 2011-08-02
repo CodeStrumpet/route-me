@@ -89,12 +89,14 @@ svn checkout http://route-me.googlecode.com/svn/trunk/ route-me-read-only
 
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CGGeometry.h>
+#import <CoreLocation/CoreLocation.h>
 
 #import "RMNotifications.h"
 #import "RMFoundation.h"
 #import "RMLatLong.h"
 #import "RMMapViewDelegate.h"
 #import "RMMapContents.h"
+#import "RMUserLocationMarker.h"
 
 /*! 
  \struct RMGestureDetails
@@ -130,6 +132,12 @@ typedef struct {
 	float decelerationFactor;
 	BOOL deceleration;
         CGFloat rotation;
+    
+    RMUserLocationMarker *userDot;
+    CLLocationManager *locationManager;
+    BOOL showsUserLocation;
+    CLLocationCoordinate2D userLocation;
+    float radius;
 	
 @private
    	BOOL _delegateHasBeforeMapMove;
@@ -166,6 +174,12 @@ typedef struct {
 @property (readwrite) BOOL enableZoom;
 @property (readwrite) BOOL enableRotate;
 
+@property (nonatomic, retain) RMUserLocationMarker *userDot; 
+@property (nonatomic, retain) CLLocationManager *locationManager;
+@property (nonatomic) BOOL showsUserLocation;
+@property (nonatomic) CLLocationCoordinate2D userLocation;
+@property (nonatomic) float radius;
+
 @property (nonatomic, retain, readonly) RMMarkerManager *markerManager;
 
 // do not retain the delegate so you can let the corresponding controller implement the
@@ -195,5 +209,6 @@ typedef struct {
 
 - (void)setRotation:(CGFloat)angle;
 
+- (void)addUserMarker;
 
 @end
