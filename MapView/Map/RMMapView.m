@@ -91,7 +91,7 @@
 	_constrainMovement=NO;
     
     self.locationManager = [[CLLocationManager alloc] init];
-    locationManager.delegate = self;
+    locationManager.delegate = (id)self;
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     locationManager.distanceFilter = 1.0f;
 	showsUserLocation = NO;
@@ -146,7 +146,6 @@
 -(void) dealloc
 {
 	LogMethod();
-    showsUserLocation = NO;
     [locationManager release];
     [self.userDot release]; 
 	self.contents = nil;
@@ -383,6 +382,9 @@
 		if (_delegateHasAfterMapZoomByFactor) [delegate afterMapZoom: self byFactor: zoomFactor near: center];
 		if (_delegateHasMapViewRegionDidChange) [delegate mapViewRegionDidChange:self];
 	}
+    if(self.userDot != nil){
+        [self.userDot updateCircles];
+    }
 }
 
 
@@ -804,21 +806,14 @@
 
 - (void)addUserMarker
 {
-//        CLLocationCoordinate2D markerPosition;
-//        markerPosition.latitude = userLocation.latitude;
-//        markerPosition.longitude = userLocation.longitude;
-        
-        if(self.userDot == nil)
-        {
-            RMUserLocationMarker *newMarker = [[RMUserLocationMarker alloc] initWithMarkerManager:self.contents pinLocation:self.userLocation];
-            self.userDot = newMarker;
-            [self.contents.markerManager addMarker:self.userDot AtLatLong:self.userLocation];
-            [newMarker release];
-        }
-        else
-        {
-            //[self.userDot updateLocation:markerPosition newRadius:self.radius]; 
-        }
+    if(self.userDot == nil){
+        RMUserLocationMarker *newMarker = [[RMUserLocationMarker alloc] initWithMarkerManager:self.contents pinLocation:self.userLocation originalRadius:self.radius];
+        self.userDot = newMarker;
+        [newMarker release];
+    }
+    else{
+      [self.userDot updateLocation:self.userLocation  newRadius:self.radius]; 
+    }
 }
 
 

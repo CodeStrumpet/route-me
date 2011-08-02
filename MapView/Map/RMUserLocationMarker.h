@@ -23,6 +23,9 @@
     CGFloat lineWidth;
     float zoom;
     RMCircle *circle;
+    RMMarker *dot;
+    RMCircle *blinkCircle;
+    RMCircle *firstcircle;
 }
 
 @property (nonatomic, retain) RMMapContents *contents;
@@ -33,7 +36,23 @@
 @property(nonatomic, retain) UIColor *fillColor;
 @property(nonatomic, retain) UIColor *lineColor;
 @property(nonatomic, retain) RMCircle *circle;
+@property(nonatomic, retain) RMMarker *dot;
+@property(nonatomic, retain) RMCircle *blinkCircle;
+@property(nonatomic, retain)RMCircle *firstcircle;
 
--(id)initWithMarkerManager: (RMMapContents *) content pinLocation:(CLLocationCoordinate2D) point;
+
+-(id)initWithMarkerManager: (RMMapContents *) content pinLocation:(CLLocationCoordinate2D) point originalRadius:(CGFloat) radiusOfCircle;
+-(void)updateLocation:(CLLocationCoordinate2D) point newRadius:(CGFloat) radiusOfCircle;
 -(void)initCircle;
+-(void)initdot;
+-(void)initFirstCircle;
+-(void)initBlinkCircle;
+-(void)addAnimationToBlinkCircle;
+-(void)removeBlink;
+-(void)updateMainCircleSize;
+-(void)updateCircles;
+-(void)removeFirstCircle;
+-(void)secondStepRingTransition;
+-(void)removeGPSMarker:(RMUserLocationMarker*)gpsMarker;
+-(void)removeGpsMarker;
 @end
