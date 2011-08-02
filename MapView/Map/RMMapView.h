@@ -211,4 +211,7 @@ typedef struct {
 
 - (void)addUserMarker;
 
+- (void) goingInBackground:(NSNotification *)inNotification; 
+- (void) goingToBeActive:(NSNotification *)inNotification; 
+
 @end

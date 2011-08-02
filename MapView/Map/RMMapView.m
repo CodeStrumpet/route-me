@@ -794,13 +794,22 @@
 }
 
 -(void)setShowsUserLocation:(BOOL)shows {
-   // if(shows){
+    if(shows){
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(goingInBackground:) name:UIApplicationDidEnterBackgroundNotification object:NULL];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(goingToBeActive:) name:UIApplicationDidBecomeActiveNotification object:NULL];
+        showsUserLocation = YES;
         [self.locationManager startUpdatingLocation];
-    //}
-   // if(shows){
-    //    [self.locationManager stopUpdatingLocation];
-        
-   // }
+    }
+    else{
+       [[NSNotificationCenter defaultCenter] removeObserver:self];
+       showsUserLocation = NO;
+       [self.locationManager stopUpdatingLocation];
+       if(self.userDot != nil){
+         [self.userDot removeGpsMarker];
+         [self.userDot release];
+         self.userDot = nil;
+       }
+    }
 }
 
 
@@ -816,5 +825,13 @@
     }
 }
 
+-(void)goingInBackground:(NSNotification *)inNotification{
+    [self.locationManager stopUpdatingLocation];
+   // NSLog(@"Going sleep");
+}
 
+-(void)goingToBeActive:(NSNotification *)inNotification{
+    [self.locationManager startUpdatingLocation];
+    //NSLog(@"Wake up");
+}
 @end
