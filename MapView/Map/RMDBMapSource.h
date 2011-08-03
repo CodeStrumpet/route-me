@@ -49,6 +49,7 @@
 }
 
 -(id)initWithPath:(NSString*)path;
+-(id)initWithPath:(NSString *)path pathIsInBundle:(BOOL)pathIsInBundle;
 
 -(int)tileSideLength;
 

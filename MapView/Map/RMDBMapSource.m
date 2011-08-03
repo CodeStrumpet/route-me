@@ -103,11 +103,22 @@
 
 @implementation RMDBMapSource
 
+
 -(id)initWithPath:(NSString*)path {
+    return [self initWithPath:path pathIsInBundle:YES];
+}
+
+-(id)initWithPath:(NSString *)path pathIsInBundle:(BOOL)pathIsInBundle {
 	self = [super init];
 	if (self != nil) {
 		// open the db
-		NSString* fullPath = [[NSBundle mainBundle] pathForResource:path ofType:nil];
+        
+		NSString* fullPath;
+        if (pathIsInBundle) {
+            fullPath = [[NSBundle mainBundle] pathForResource:path ofType:nil];
+        } else {
+            fullPath = path;
+        }
 		NSLog(@"Trying to Open db map source %@", fullPath);
 		db = [[FMDatabase alloc] initWithPath:fullPath];
 		if ([db open]) {
@@ -147,6 +158,8 @@
 	}
 	return self;
 }
+
+
 
 -(void) dealloc {
 	[db release];
