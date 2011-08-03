@@ -151,7 +151,6 @@
 	LogMethod();
     [self setShowsUserLocation:NO];
     [locationManager release];
-    [self.userDot release];
 	self.contents = nil;
 	[super dealloc];
 }

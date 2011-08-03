@@ -20,6 +20,7 @@
 @synthesize dot;
 @synthesize blinkCircle;
 @synthesize firstcircle;
+@synthesize image;
 
 - (id)init
 {
@@ -41,6 +42,8 @@
         self.lineColor = [UIColor colorWithRed:0.5 green:0.5 blue:1 alpha:1];
         self.initialized = YES;
         self.zoom = contents.zoom;
+        UIImage *blueDot = [UIImage imageNamed:@"blue_position_indicator.png"];
+        self.image = blueDot;
         [self initFirstCircle];
         [self initCircle];
         [self initdot];
@@ -84,13 +87,10 @@
 }
 
 -(void)initdot
-{
-    UIImage *blueDot = [UIImage imageNamed:@"blue_position_indicator.png"]; 
-    RMMarker *tempDot = [[RMMarker alloc] initWithUIImage:blueDot];
+{ 
+    RMMarker *tempDot = [[RMMarker alloc] initWithUIImage:self.image];
     self.dot = tempDot;
-    [self.dot changeLabelUsingText:[NSString stringWithFormat:@"HI"]];
-    //[self.dot replaceUIImage:blueDot];
-    //self.dot.hidden = YES;
+    self.dot.hidden = YES;
     [self addOverlay:self.dot AtLatLong:self.pinCoordinate]; 
     [tempDot release];
 }
@@ -215,6 +215,7 @@
 
 -(void)dealloc
 {
+    [self.image release];
     [self.firstcircle release];
     [self.blinkCircle release];
     [self.dot release];

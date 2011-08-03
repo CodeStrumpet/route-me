@@ -29,6 +29,7 @@
     RMMarker *dot;
     RMCircle *blinkCircle;
     RMCircle *firstcircle;
+    UIImage *image;
 }
 
 @property (nonatomic, retain) RMMapContents *contents;
@@ -42,6 +43,7 @@
 @property(nonatomic, retain) RMMarker *dot;
 @property(nonatomic, retain) RMCircle *blinkCircle;
 @property(nonatomic, retain)RMCircle *firstcircle;
+@property(nonatomic,retain) UIImage *image;
 
 
 -(id)initWithContents: (RMMapContents *) content pinLocation:(CLLocationCoordinate2D) point originalRadius:(CGFloat) radiusOfCircle;

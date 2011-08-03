@@ -304,8 +304,6 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		93CA739E13E78D4F0043F083 /* RMUserLocationMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMUserLocationMarker.h; sourceTree = "<group>"; };
 		93CA739F13E78D4F0043F083 /* RMUserLocationMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMUserLocationMarker.m; sourceTree = "<group>"; };
-		93F81AD613E767B700FC8D9D /* blue_position_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blue_position_indicator.png; sourceTree = "<group>"; };
-		93F81AD713E767CD00FC8D9D /* blue_position_indicator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue_position_indicator@2x.png"; sourceTree = "<group>"; };
 		96492C3F0FA8AD3400EBA6D2 /* RMGlobalConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMGlobalConstants.h; sourceTree = "<group>"; };
 		966504690F6869810036562A /* loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loading.png; sourceTree = "<group>"; };
 		96FE8E340F72D01B00A11CF0 /* RMYahooMapSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMYahooMapSource.h; sourceTree = "<group>"; };
@@ -745,8 +743,6 @@
 		B8474C610EB53A01006A0BC1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				93F81AD713E767CD00FC8D9D /* blue_position_indicator@2x.png */,
-				93F81AD613E767B700FC8D9D /* blue_position_indicator.png */,
 				966504690F6869810036562A /* loading.png */,
 				2B2BADD60FA3B45A00EE37AA /* marker-X.png */,
 				B8474C6D0EB53A41006A0BC1 /* marker-blue.png */,
