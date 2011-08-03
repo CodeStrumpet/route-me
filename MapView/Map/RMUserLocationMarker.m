@@ -8,6 +8,12 @@
 
 #import "RMUserLocationMarker.h"
 
+@interface RMUserLocationMarker (PrivateMethods)
+
+- (void)addOverlay:(RMMapLayer *)layer atProjectedPoint:(RMProjectedPoint)projectedPoint;
+
+@end
+
 @implementation RMUserLocationMarker
 
 @synthesize contents;
@@ -227,9 +233,13 @@
     [super dealloc];
 }
 
-
 - (void)addOverlay:(RMMapLayer *)layer atProjectedPoint:(RMProjectedPoint)projectedPoint {
-	[layer setProjectedLocation:projectedPoint];
+    if([layer isMemberOfClass:[RMMarker class]] == YES){
+        [(RMMarker*) layer setProjectedLocation:projectedPoint]; 
+    }
+    else{
+        [(RMCircle*) layer setProjectedLocation:projectedPoint];
+    }
 	[layer setPosition:[[contents mercatorToScreenProjection] projectXYPoint:projectedPoint]];
 	[[self.contents overlay] addSublayer:layer];
 }
@@ -242,13 +252,23 @@
 
 - (void) moveOverlay:(RMMapLayer *)layer AtLatLon:(RMLatLong)point
 {
-	[layer setProjectedLocation:[[contents projection]latLongToPoint:point]];
+    if([layer isMemberOfClass:[RMMarker class]] == YES){
+        [(RMMarker*)layer setProjectedLocation:[[contents projection]latLongToPoint:point]];
+    }
+    else{
+        [(RMCircle*) layer setProjectedLocation:[[contents projection]latLongToPoint:point]];
+    }
 	[layer setPosition:[[contents mercatorToScreenProjection] projectXYPoint:[[contents projection] latLongToPoint:point]]];
 }
 
 - (void) moveOverlay:(RMMapLayer *)layer AtXY:(CGPoint)point
 {
-	[layer setProjectedLocation:[[contents mercatorToScreenProjection] projectScreenPointToXY:point]];
+    if([layer isMemberOfClass:[RMMarker class]] == YES){
+        [(RMMarker*)layer setProjectedLocation:[[contents mercatorToScreenProjection] projectScreenPointToXY:point]];
+    }
+    else{
+        [(RMCircle*) layer setProjectedLocation:[[contents mercatorToScreenProjection] projectScreenPointToXY:point]];
+    }
 	[layer setPosition:point];
 }
 

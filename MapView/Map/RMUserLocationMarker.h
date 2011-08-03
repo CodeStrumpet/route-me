@@ -61,7 +61,6 @@
 -(void)removeGPSMarker:(RMUserLocationMarker*)gpsMarker;
 -(void)removeGpsMarker;
 
-- (void)addOverlay:(RMMapLayer *)layer atProjectedPoint:(RMProjectedPoint)projectedPoint;
 - (void) addOverlay: (RMMapLayer*)layer AtLatLong:(CLLocationCoordinate2D)point;
 
 - (void) moveOverlay:(RMMapLayer *)layer AtLatLon:(RMLatLong)point;
