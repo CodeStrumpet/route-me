@@ -209,6 +209,4 @@ typedef struct {
 
 - (void)setRotation:(CGFloat)angle;
 
-- (void)addUserMarker;
-
 @end

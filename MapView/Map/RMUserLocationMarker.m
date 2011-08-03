@@ -11,7 +11,7 @@
 @implementation RMUserLocationMarker
 
 @synthesize contents;
-@synthesize pinLocation;
+@synthesize pinCoordinate;
 @synthesize radius,blinkRadius,lineWidth;
 @synthesize initialized;
 @synthesize zoom;
@@ -29,12 +29,12 @@
     return self;
 }
 
--(id)initWithMarkerManager:(RMMapContents *)content pinLocation:(CLLocationCoordinate2D)point originalRadius:(CGFloat)radiusOfCircle{
+-(id)initWithContents:(RMMapContents *)content pinLocation:(CLLocationCoordinate2D)point originalRadius:(CGFloat)radiusOfCircle{
     self = [super init];
     if (self) {
         self.contents = content;
         self.radius = radiusOfCircle;
-        self.pinLocation = point;
+        self.pinCoordinate = point;
         self.blinkRadius = 200.0f/self.contents.zoom;
         self.lineWidth = 1;
         self.fillColor = [UIColor colorWithRed:0 green:0 blue:1 alpha:0.05];
@@ -57,21 +57,21 @@
         if(self.zoom < 14.8f){self.circle.hidden = YES;}
         else{self.circle.hidden = NO;}
         self.circle.radiusInMeters = self.radius;
-        self.pinLocation = point;
-        [self.contents.markerManager moveMarker:self.dot AtLatLon:self.pinLocation];
-        [self.contents.markerManager moveMarker:self.circle AtLatLon:self.pinLocation];
+        self.pinCoordinate = point;
+        [self moveOverlay:self.dot AtLatLon:self.pinCoordinate];
+        [self moveOverlay:self.circle AtLatLon:self.pinCoordinate];
         [self updateMainCircleSize];
         self.blinkCircle.radiusInMeters = self.blinkRadius;
         self.blinkCircle.hidden = NO;
         [self addAnimationToBlinkCircle];
-        [self.contents.markerManager moveMarker:self.blinkCircle AtLatLon:self.pinLocation];
+        [self moveOverlay:self.blinkCircle AtLatLon:self.pinCoordinate];
         [self performSelector:@selector(removeBlink) withObject:nil afterDelay:(float)8.0f];
     }
 }
 
 -(void)initCircle
 {
-    RMCircle *tempCircle = [[RMCircle alloc] initWithContents:self.contents radiusInMeters:self.radius latLong:self.pinLocation];
+    RMCircle *tempCircle = [[RMCircle alloc] initWithContents:self.contents radiusInMeters:self.radius latLong:self.pinCoordinate];
     self.circle = tempCircle;
     self.circle.fillColor = self.fillColor;
     self.circle.lineColor = self.lineColor;
@@ -79,7 +79,7 @@
     else{self.circle.hidden = NO;}
     self.circle.lineWidthInPixels = self.lineWidth;
     
-    [self.contents.markerManager addMarker:self.circle AtLatLong:self.pinLocation]; 
+    [self addOverlay:self.circle AtLatLong:self.pinCoordinate]; 
     [tempCircle release];
 }
 
@@ -88,15 +88,17 @@
     UIImage *blueDot = [UIImage imageNamed:@"blue_position_indicator.png"]; 
     RMMarker *tempDot = [[RMMarker alloc] initWithUIImage:blueDot];
     self.dot = tempDot;
-    self.dot.hidden = YES;
-    [self.contents.markerManager addMarker:self.dot AtLatLong:self.pinLocation]; 
+    [self.dot changeLabelUsingText:[NSString stringWithFormat:@"HI"]];
+    //[self.dot replaceUIImage:blueDot];
+    //self.dot.hidden = YES;
+    [self addOverlay:self.dot AtLatLong:self.pinCoordinate]; 
     [tempDot release];
 }
 
 -(void)initBlinkCircle
 {
     [self updateMainCircleSize];
-    RMCircle *tempCircle2 = [[RMCircle alloc] initWithContents:self.contents radiusInMeters:self.blinkRadius latLong:self.pinLocation];
+    RMCircle *tempCircle2 = [[RMCircle alloc] initWithContents:self.contents radiusInMeters:self.blinkRadius latLong:self.pinCoordinate];
     self.blinkCircle = tempCircle2;
     self.blinkCircle.fillColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0];
     self.blinkCircle.lineColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
@@ -104,7 +106,7 @@
     self.blinkCircle.shadowOpacity= 10;
     self.blinkCircle.lineWidthInPixels = self.lineWidth + 1.5;
     [self addAnimationToBlinkCircle];
-    [self.contents.markerManager addMarker:self.blinkCircle AtLatLong:self.pinLocation]; 
+    [self addOverlay:self.blinkCircle AtLatLong:self.pinCoordinate]; 
     [self performSelector:@selector(removeBlink) withObject:nil afterDelay:(float)5.0f];
     [tempCircle2 release];
 }
@@ -138,7 +140,7 @@
 
 -(void)initFirstCircle
 {
-    RMCircle *tempC = [[RMCircle alloc] initWithContents:self.contents radiusInMeters:(self.blinkRadius * 200) latLong:self.pinLocation];
+    RMCircle *tempC = [[RMCircle alloc] initWithContents:self.contents radiusInMeters:(self.blinkRadius * 200) latLong:self.pinCoordinate];
     self.firstcircle = tempC;
     self.firstcircle.fillColor = self.fillColor;
     self.firstcircle.lineColor = self.lineColor;
@@ -153,7 +155,7 @@
     theAnimationForScalling2.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     [self.firstcircle addAnimation:theAnimationForScalling2 forKey:@"transform"];
     
-    [self.contents.markerManager addMarker:self.firstcircle AtLatLong:self.pinLocation]; 
+    [self addOverlay: self.firstcircle AtLatLong:self.pinCoordinate]; 
     [self performSelector:@selector(secondStepRingTransition) withObject:nil afterDelay:(float)0.95f];
     [tempC release];
     
@@ -175,7 +177,7 @@
 
 -(void)removeFirstCircle
 {
-    [self.contents.markerManager removeMarker:self.firstcircle];
+    [self removeOverlay:self.firstcircle];
     self.dot.hidden = NO;
 }
 
@@ -199,17 +201,16 @@
 
 -(void)removeGPSMarker:(RMUserLocationMarker*)gpsMarker
 {
-    [self.contents.markerManager removeMarker:gpsMarker.circle];
-    [self.contents.markerManager removeMarker:gpsMarker.dot];
-    [self.contents.markerManager removeMarker:gpsMarker.blinkCircle];
-    [self.contents.markerManager removeMarker:gpsMarker.firstcircle];
+    [self removeOverlay:gpsMarker.circle];
+    [self removeOverlay:gpsMarker.dot];
+    [self removeOverlay:gpsMarker.blinkCircle];
 }
 
 -(void)removeGpsMarker
 {
-    [self.contents.markerManager removeMarker: self.circle];
-    [self.contents.markerManager removeMarker:self.dot];
-    [self.contents.markerManager removeMarker:self.blinkCircle];
+    [self removeOverlay: self.circle];
+    [self removeOverlay: self.dot];
+    [self removeOverlay: self.blinkCircle];
 }
 
 -(void)dealloc
@@ -223,6 +224,41 @@
     [lineColor release];
     [self.contents release];
     [super dealloc];
+}
+
+
+- (void)addOverlay:(RMMapLayer *)layer atProjectedPoint:(RMProjectedPoint)projectedPoint {
+	[layer setProjectedLocation:projectedPoint];
+	[layer setPosition:[[contents mercatorToScreenProjection] projectXYPoint:projectedPoint]];
+	[[self.contents overlay] addSublayer:layer];
+}
+
+- (void) addOverlay: (RMMapLayer*)layer AtLatLong:(CLLocationCoordinate2D)point
+{
+	[self addOverlay:layer atProjectedPoint:[[self.contents projection] latLongToPoint:point]];
+}
+
+
+- (void) moveOverlay:(RMMapLayer *)layer AtLatLon:(RMLatLong)point
+{
+	[layer setProjectedLocation:[[contents projection]latLongToPoint:point]];
+	[layer setPosition:[[contents mercatorToScreenProjection] projectXYPoint:[[contents projection] latLongToPoint:point]]];
+}
+
+- (void) moveOverlay:(RMMapLayer *)layer AtXY:(CGPoint)point
+{
+	[layer setProjectedLocation:[[contents mercatorToScreenProjection] projectScreenPointToXY:point]];
+	[layer setPosition:point];
+}
+
+- (void) removeOverlay:(RMMapLayer *)layer
+{
+	[[contents overlay] removeSublayer:layer];
+}
+
+- (void) removeOverlays:(NSArray *)layers
+{
+	[[contents overlay] removeSublayers:layers];
 }
 
 @end
