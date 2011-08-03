@@ -1,0 +1,455 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		932A361C13E76FDC00BAE52B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932A361B13E76FDC00BAE52B /* UIKit.framework */; };
+		932A361E13E76FDC00BAE52B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932A361D13E76FDC00BAE52B /* Foundation.framework */; };
+		932A362013E76FDC00BAE52B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932A361F13E76FDC00BAE52B /* CoreGraphics.framework */; };
+		932A362613E76FDC00BAE52B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 932A362413E76FDC00BAE52B /* InfoPlist.strings */; };
+		932A362813E76FDC00BAE52B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 932A362713E76FDC00BAE52B /* main.m */; };
+		932A362C13E76FDC00BAE52B /* GpsLocationAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 932A362B13E76FDC00BAE52B /* GpsLocationAppDelegate.m */; };
+		932A362F13E76FDC00BAE52B /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 932A362D13E76FDC00BAE52B /* MainWindow.xib */; };
+		932A363213E76FDC00BAE52B /* GpsLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 932A363113E76FDC00BAE52B /* GpsLocationViewController.m */; };
+		932A363513E76FDC00BAE52B /* GpsLocationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 932A363313E76FDC00BAE52B /* GpsLocationViewController.xib */; };
+		932A363D13E76FDC00BAE52B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932A363C13E76FDC00BAE52B /* SenTestingKit.framework */; };
+		932A363E13E76FDC00BAE52B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932A361B13E76FDC00BAE52B /* UIKit.framework */; };
+		932A363F13E76FDC00BAE52B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932A361D13E76FDC00BAE52B /* Foundation.framework */; };
+		932A364013E76FDC00BAE52B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932A361F13E76FDC00BAE52B /* CoreGraphics.framework */; };
+		932A364813E76FDC00BAE52B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 932A364613E76FDC00BAE52B /* InfoPlist.strings */; };
+		932A364A13E76FDC00BAE52B /* GpsLocationTests.h in Resources */ = {isa = PBXBuildFile; fileRef = 932A364913E76FDC00BAE52B /* GpsLocationTests.h */; };
+		932A364C13E76FDC00BAE52B /* GpsLocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 932A364B13E76FDC00BAE52B /* GpsLocationTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		932A364113E76FDC00BAE52B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 932A360E13E76FDB00BAE52B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 932A361613E76FDC00BAE52B;
+			remoteInfo = GpsLocation;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		932A361713E76FDC00BAE52B /* GpsLocation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GpsLocation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		932A361B13E76FDC00BAE52B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		932A361D13E76FDC00BAE52B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		932A361F13E76FDC00BAE52B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		932A362313E76FDC00BAE52B /* GpsLocation-Info.plist */ = {isa = PBXFileReference; path = "GpsLocation-Info.plist"; sourceTree = "<group>"; };
+		932A362513E76FDC00BAE52B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		932A362713E76FDC00BAE52B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		932A362913E76FDC00BAE52B /* GpsLocation-Prefix.pch */ = {isa = PBXFileReference; path = "GpsLocation-Prefix.pch"; sourceTree = "<group>"; };
+		932A362A13E76FDC00BAE52B /* GpsLocationAppDelegate.h */ = {isa = PBXFileReference; path = GpsLocationAppDelegate.h; sourceTree = "<group>"; };
+		932A362B13E76FDC00BAE52B /* GpsLocationAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GpsLocationAppDelegate.m; sourceTree = "<group>"; };
+		932A362E13E76FDC00BAE52B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		932A363013E76FDC00BAE52B /* GpsLocationViewController.h */ = {isa = PBXFileReference; path = GpsLocationViewController.h; sourceTree = "<group>"; };
+		932A363113E76FDC00BAE52B /* GpsLocationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GpsLocationViewController.m; sourceTree = "<group>"; };
+		932A363413E76FDC00BAE52B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/GpsLocationViewController.xib; sourceTree = "<group>"; };
+		932A363B13E76FDC00BAE52B /* GpsLocationTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GpsLocationTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		932A363C13E76FDC00BAE52B /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		932A364513E76FDC00BAE52B /* GpsLocationTests-Info.plist */ = {isa = PBXFileReference; path = "GpsLocationTests-Info.plist"; sourceTree = "<group>"; };
+		932A364713E76FDC00BAE52B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		932A364913E76FDC00BAE52B /* GpsLocationTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GpsLocationTests.h; sourceTree = "<group>"; };
+		932A364B13E76FDC00BAE52B /* GpsLocationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GpsLocationTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		932A361413E76FDC00BAE52B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				932A361C13E76FDC00BAE52B /* UIKit.framework in Frameworks */,
+				932A361E13E76FDC00BAE52B /* Foundation.framework in Frameworks */,
+				932A362013E76FDC00BAE52B /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		932A363713E76FDC00BAE52B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				932A363D13E76FDC00BAE52B /* SenTestingKit.framework in Frameworks */,
+				932A363E13E76FDC00BAE52B /* UIKit.framework in Frameworks */,
+				932A363F13E76FDC00BAE52B /* Foundation.framework in Frameworks */,
+				932A364013E76FDC00BAE52B /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		932A360C13E76FDB00BAE52B = {
+			isa = PBXGroup;
+			children = (
+				932A362113E76FDC00BAE52B /* GpsLocation */,
+				932A364313E76FDC00BAE52B /* GpsLocationTests */,
+				932A361A13E76FDC00BAE52B /* Frameworks */,
+				932A361813E76FDC00BAE52B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		932A361813E76FDC00BAE52B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				932A361713E76FDC00BAE52B /* GpsLocation.app */,
+				932A363B13E76FDC00BAE52B /* GpsLocationTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		932A361A13E76FDC00BAE52B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				932A361B13E76FDC00BAE52B /* UIKit.framework */,
+				932A361D13E76FDC00BAE52B /* Foundation.framework */,
+				932A361F13E76FDC00BAE52B /* CoreGraphics.framework */,
+				932A363C13E76FDC00BAE52B /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		932A362113E76FDC00BAE52B /* GpsLocation */ = {
+			isa = PBXGroup;
+			children = (
+				932A362A13E76FDC00BAE52B /* GpsLocationAppDelegate.h */,
+				932A362B13E76FDC00BAE52B /* GpsLocationAppDelegate.m */,
+				932A362D13E76FDC00BAE52B /* MainWindow.xib */,
+				932A363013E76FDC00BAE52B /* GpsLocationViewController.h */,
+				932A363113E76FDC00BAE52B /* GpsLocationViewController.m */,
+				932A363313E76FDC00BAE52B /* GpsLocationViewController.xib */,
+				932A362213E76FDC00BAE52B /* Supporting Files */,
+			);
+			path = GpsLocation;
+			sourceTree = "<group>";
+		};
+		932A362213E76FDC00BAE52B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				932A362313E76FDC00BAE52B /* GpsLocation-Info.plist */,
+				932A362413E76FDC00BAE52B /* InfoPlist.strings */,
+				932A362713E76FDC00BAE52B /* main.m */,
+				932A362913E76FDC00BAE52B /* GpsLocation-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		932A364313E76FDC00BAE52B /* GpsLocationTests */ = {
+			isa = PBXGroup;
+			children = (
+				932A364913E76FDC00BAE52B /* GpsLocationTests.h */,
+				932A364B13E76FDC00BAE52B /* GpsLocationTests.m */,
+				932A364413E76FDC00BAE52B /* Supporting Files */,
+			);
+			path = GpsLocationTests;
+			sourceTree = "<group>";
+		};
+		932A364413E76FDC00BAE52B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				932A364513E76FDC00BAE52B /* GpsLocationTests-Info.plist */,
+				932A364613E76FDC00BAE52B /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		932A361613E76FDC00BAE52B /* GpsLocation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 932A364F13E76FDC00BAE52B /* Build configuration list for PBXNativeTarget "GpsLocation" */;
+			buildPhases = (
+				932A361313E76FDC00BAE52B /* Sources */,
+				932A361413E76FDC00BAE52B /* Frameworks */,
+				932A361513E76FDC00BAE52B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GpsLocation;
+			productName = GpsLocation;
+			productReference = 932A361713E76FDC00BAE52B /* GpsLocation.app */;
+			productType = "com.apple.product-type.application";
+		};
+		932A363A13E76FDC00BAE52B /* GpsLocationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 932A365213E76FDC00BAE52B /* Build configuration list for PBXNativeTarget "GpsLocationTests" */;
+			buildPhases = (
+				932A363613E76FDC00BAE52B /* Sources */,
+				932A363713E76FDC00BAE52B /* Frameworks */,
+				932A363813E76FDC00BAE52B /* Resources */,
+				932A363913E76FDC00BAE52B /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				932A364213E76FDC00BAE52B /* PBXTargetDependency */,
+			);
+			name = GpsLocationTests;
+			productName = GpsLocationTests;
+			productReference = 932A363B13E76FDC00BAE52B /* GpsLocationTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		932A360E13E76FDB00BAE52B /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 932A361113E76FDB00BAE52B /* Build configuration list for PBXProject "GpsLocation" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 932A360C13E76FDB00BAE52B;
+			productRefGroup = 932A361813E76FDC00BAE52B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				932A361613E76FDC00BAE52B /* GpsLocation */,
+				932A363A13E76FDC00BAE52B /* GpsLocationTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		932A361513E76FDC00BAE52B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				932A362613E76FDC00BAE52B /* InfoPlist.strings in Resources */,
+				932A362F13E76FDC00BAE52B /* MainWindow.xib in Resources */,
+				932A363513E76FDC00BAE52B /* GpsLocationViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		932A363813E76FDC00BAE52B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				932A364813E76FDC00BAE52B /* InfoPlist.strings in Resources */,
+				932A364A13E76FDC00BAE52B /* GpsLocationTests.h in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		932A363913E76FDC00BAE52B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		932A361313E76FDC00BAE52B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				932A362813E76FDC00BAE52B /* main.m in Sources */,
+				932A362C13E76FDC00BAE52B /* GpsLocationAppDelegate.m in Sources */,
+				932A363213E76FDC00BAE52B /* GpsLocationViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		932A363613E76FDC00BAE52B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				932A364C13E76FDC00BAE52B /* GpsLocationTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		932A364213E76FDC00BAE52B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 932A361613E76FDC00BAE52B /* GpsLocation */;
+			targetProxy = 932A364113E76FDC00BAE52B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		932A362413E76FDC00BAE52B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				932A362513E76FDC00BAE52B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		932A362D13E76FDC00BAE52B /* MainWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				932A362E13E76FDC00BAE52B /* en */,
+			);
+			name = MainWindow.xib;
+			sourceTree = "<group>";
+		};
+		932A363313E76FDC00BAE52B /* GpsLocationViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				932A363413E76FDC00BAE52B /* en */,
+			);
+			name = GpsLocationViewController.xib;
+			sourceTree = "<group>";
+		};
+		932A364613E76FDC00BAE52B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				932A364713E76FDC00BAE52B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		932A364D13E76FDC00BAE52B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		932A364E13E76FDC00BAE52B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		932A365013E76FDC00BAE52B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GpsLocation/GpsLocation-Prefix.pch";
+				INFOPLIST_FILE = "GpsLocation/GpsLocation-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		932A365113E76FDC00BAE52B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GpsLocation/GpsLocation-Prefix.pch";
+				INFOPLIST_FILE = "GpsLocation/GpsLocation-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		932A365313E76FDC00BAE52B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/GpsLocation.app/GpsLocation";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GpsLocation/GpsLocation-Prefix.pch";
+				INFOPLIST_FILE = "GpsLocationTests/GpsLocationTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		932A365413E76FDC00BAE52B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/GpsLocation.app/GpsLocation";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GpsLocation/GpsLocation-Prefix.pch";
+				INFOPLIST_FILE = "GpsLocationTests/GpsLocationTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		932A361113E76FDB00BAE52B /* Build configuration list for PBXProject "GpsLocation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				932A364D13E76FDC00BAE52B /* Debug */,
+				932A364E13E76FDC00BAE52B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		932A364F13E76FDC00BAE52B /* Build configuration list for PBXNativeTarget "GpsLocation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				932A365013E76FDC00BAE52B /* Debug */,
+				932A365113E76FDC00BAE52B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		932A365213E76FDC00BAE52B /* Build configuration list for PBXNativeTarget "GpsLocationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				932A365313E76FDC00BAE52B /* Debug */,
+				932A365413E76FDC00BAE52B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 932A360E13E76FDB00BAE52B /* Project object */;
+}
