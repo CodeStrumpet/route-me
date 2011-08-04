@@ -92,8 +92,9 @@
 	self.backgroundColor = [UIColor grayColor];
 	
 	_constrainMovement=NO;
-    
-    self.locationManager = [[[CLLocationManager alloc] init] autorelease];
+    [self.locationManager stopUpdatingLocation];
+    self.locationManager = nil;
+    self.locationManager = [[[CLLocationManager alloc] init] autorelease];  // EXC_BAD_ACCESS here when it was autoreleased in the proper manner
     locationManager.delegate = (id)self;
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     locationManager.distanceFilter = 1.0f;
@@ -150,7 +151,9 @@
 {
 	LogMethod();
     [self setShowsUserLocation:NO];
+    [locationManager stopUpdatingLocation];
     [locationManager release];
+    locationManager = nil;
 	self.contents = nil;
 	[super dealloc];
 }
