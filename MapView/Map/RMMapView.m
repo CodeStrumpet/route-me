@@ -92,12 +92,14 @@
 	self.backgroundColor = [UIColor grayColor];
 	
 	_constrainMovement=NO;
-    [self.locationManager stopUpdatingLocation];
-    self.locationManager = nil;
-    self.locationManager = [[[CLLocationManager alloc] init] autorelease];  // EXC_BAD_ACCESS here when it was autoreleased in the proper manner
-    locationManager.delegate = (id)self;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    locationManager.distanceFilter = 1.0f;
+    
+    //[self.locationManager stopUpdatingLocation];
+    //self.locationManager = nil;
+    
+    //self.locationManager = [[[CLLocationManager alloc] init] autorelease];  // EXC_BAD_ACCESS here when it was autoreleased in the proper manner
+    //locationManager.delegate = (id)self;
+    //locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    //locationManager.distanceFilter = 1.0f;
 	showsUserLocation = NO;
 	
 //	[[NSURLCache sharedURLCache] removeAllCachedResponses];
@@ -150,10 +152,12 @@
 -(void) dealloc
 {
 	LogMethod();
-    [self setShowsUserLocation:NO];
-    [locationManager stopUpdatingLocation];
-    [locationManager release];
-    locationManager = nil;
+    
+    //locationManager.delegate = nil;
+    //[self setShowsUserLocation:NO];
+    //[locationManager stopUpdatingLocation];
+    //[locationManager release];
+    //locationManager = nil;
 	self.contents = nil;
 	[super dealloc];
 }
@@ -793,6 +797,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error 
 {
+    // -------  Main application will take care of this kind of error presentation (only acceptable solution for catching it in Route-Me would be to add a delegate method to RMMapViewDelegate...
     NSString *errorType = (error.code == kCLErrorDenied) ? @"Access Denied" : @"Unknown Error";
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error getting Location" message:errorType delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles:nil]; 
     [alert show]; 
@@ -812,8 +817,8 @@
        [self.locationManager stopUpdatingLocation];
        if(self.userDot != nil){
          [self.userDot removeGpsMarker];
-         [self.userDot release];
-         self.userDot = nil;
+         [self.userDot release]; 
+         self.userDot = nil;    // should probably not use self here (could this cause a double release?)
        }
     }
 }
