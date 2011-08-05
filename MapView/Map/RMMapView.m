@@ -153,6 +153,8 @@
 	LogMethod();
     [self setShowsUserLocation:NO];
     [locationManager release];
+    [self.userDot release];
+    self.userDot = nil;
 	self.contents = nil;
 	[super dealloc];
 }
@@ -810,9 +812,7 @@
        showsUserLocation = NO;
        [self.locationManager stopUpdatingLocation];
        if(self.userDot != nil){
-         [self.userDot removeGpsMarker];
-         [self.userDot release];
-         self.userDot = nil;
+           [self.userDot setHidden:YES];
        }
     }
 }
@@ -826,6 +826,7 @@
         [newMarker release];
     }
     else{
+      [self.userDot setHidden:NO]; 
       [self.userDot updateLocation:self.userLocation  newRadius:self.radius]; 
     }
 }
