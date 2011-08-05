@@ -146,11 +146,20 @@
     }
 }
 
+-(void)cleanupDot{
+//    if(self.userDot != nil){
+//        [self.userDot removeGpsMarker];
+//        [self.userDot release];
+//        self.userDot = nil;
+//    }
+}
+
 -(void) dealloc
 {
 	LogMethod();
     [self setShowsUserLocation:NO];
     [locationManager release];
+//    [self cleanupDot];
 	self.contents = nil;
 	[super dealloc];
 }
