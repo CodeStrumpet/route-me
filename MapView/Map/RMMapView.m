@@ -98,7 +98,6 @@
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     locationManager.distanceFilter = 1.0f;
 	showsUserLocation = NO;
-    _userTrackingIsSet = NO;
 	
 //	[[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
@@ -804,18 +803,16 @@
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(goingInBackground:) name:UIApplicationDidEnterBackgroundNotification object:NULL];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(goingToBeActive:) name:UIApplicationDidBecomeActiveNotification object:NULL];
         showsUserLocation = YES;
-        
         [self.locationManager startUpdatingLocation];
     }
     else{
        [[NSNotificationCenter defaultCenter] removeObserver:self];
        showsUserLocation = NO;
        [self.locationManager stopUpdatingLocation];
-       if(self.userDot != nil && _userTrackingIsSet == YES){
+       if(self.userDot != nil){
          [self.userDot removeGpsMarker];
          [self.userDot release];
          self.userDot = nil;
-         _userTrackingIsSet = NO;
        }
     }
 }
@@ -826,7 +823,6 @@
     if(self.userDot == nil){
         RMUserLocationMarker *newMarker = [[RMUserLocationMarker alloc] initWithContents:self.contents pinLocation:self.userLocation originalRadius:self.radius];
         self.userDot = newMarker;
-        _userTrackingIsSet = YES;
         [newMarker release];
     }
     else{
