@@ -222,6 +222,9 @@
 -(void)dealloc
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(removeBlink) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(removeFirstCircle) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondStepRingTransition) object:nil];
+
     [self removeAllAnimations];
     [self.image release];
     [self.firstcircle release];
