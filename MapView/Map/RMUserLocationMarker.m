@@ -189,11 +189,11 @@
 
 -(void)updateMainCircleSize
 {
-    if(self.zoom < 16.0f){self.blinkRadius = 300.0f;}
-    else if(self.zoom < 15.0f){self.blinkRadius = 600.0f;} 
-    else if(self.zoom < 14.0f){self.blinkRadius = 800.0f;} 
-    else if(self.zoom < 13.0f){self.blinkRadius = 1200.0f;} 
-    else if(self.zoom < 11.0f){self.blinkRadius = 2000.0f;} 
+    if(self.zoom < 16.0f){self.blinkRadius = 400.0f;}
+    else if(self.zoom < 15.0f){self.blinkRadius = 700.0f;} 
+    else if(self.zoom < 14.0f){self.blinkRadius = 900.0f;} 
+    else if(self.zoom < 13.0f){self.blinkRadius = 1300.0f;} 
+    else if(self.zoom < 11.0f){self.blinkRadius = 2500.0f;} 
     else{self.blinkRadius = self.radius / 2;}
 }
 
@@ -221,6 +221,12 @@
 
 -(void)dealloc
 {
+    [self removeGpsMarker];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(removeBlink) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(removeFirstCircle) object:nil];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondStepRingTransition) object:nil];
+    
+    [self removeAllAnimations];
     [self.image release];
     [self.firstcircle release];
     [self.blinkCircle release];

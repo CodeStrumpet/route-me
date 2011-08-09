@@ -149,15 +149,16 @@
     }
 }
 
+
+
 -(void) dealloc
 {
 	LogMethod();
-    
-    //locationManager.delegate = nil;
-    //[self setShowsUserLocation:NO];
-    //[locationManager stopUpdatingLocation];
-    //[locationManager release];
-    //locationManager = nil;
+
+    [self setShowsUserLocation:NO];
+    [locationManager release];
+    [self.userDot release];
+    self.userDot = nil;
 	self.contents = nil;
 	[super dealloc];
 }
@@ -816,9 +817,7 @@
        showsUserLocation = NO;
        [self.locationManager stopUpdatingLocation];
        if(self.userDot != nil){
-         [self.userDot removeGpsMarker];
-         [self.userDot release]; 
-         self.userDot = nil;    // should probably not use self here (could this cause a double release?)
+           [self.userDot setHidden:YES];
        }
     }
 }
@@ -832,6 +831,7 @@
         [newMarker release];
     }
     else{
+      [self.userDot setHidden:NO]; 
       [self.userDot updateLocation:self.userLocation  newRadius:self.radius]; 
     }
 }
@@ -843,6 +843,6 @@
 
 -(void)goingToBeActive:(NSNotification *)inNotification{
     [self.locationManager startUpdatingLocation];
-    //NSLog(@"Wake up");
+   // NSLog(@"Wake up");
 }
 @end
