@@ -221,6 +221,7 @@
 
 -(void)dealloc
 {
+    [self.contents.markerManager.userDotLayers removeAllObjects];
     [self removeGpsMarker];
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(removeBlink) object:nil];
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(removeFirstCircle) object:nil];
@@ -248,6 +249,7 @@
     }
 	[layer setPosition:[[contents mercatorToScreenProjection] projectXYPoint:projectedPoint]];
 	[[self.contents overlay] addSublayer:layer];
+    [self.contents.markerManager.userDotLayers addObject:layer];
 }
 
 - (void) addOverlay: (RMMapLayer*)layer AtLatLong:(CLLocationCoordinate2D)point
@@ -281,6 +283,7 @@
 - (void) removeOverlay:(RMMapLayer *)layer
 {
 	[[contents overlay] removeSublayer:layer];
+    [self.contents.markerManager.userDotLayers removeObject:layer];
 }
 
 - (void) removeOverlays:(NSArray *)layers

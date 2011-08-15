@@ -93,13 +93,6 @@
 	
 	_constrainMovement=NO;
     
-    //[self.locationManager stopUpdatingLocation];
-    //self.locationManager = nil;
-    
-    //self.locationManager = [[[CLLocationManager alloc] init] autorelease];  // EXC_BAD_ACCESS here when it was autoreleased in the proper manner
-    //locationManager.delegate = (id)self;
-    //locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    //locationManager.distanceFilter = 1.0f;
 	showsUserLocation = NO;
 	
 //	[[NSURLCache sharedURLCache] removeAllCachedResponses];
@@ -149,6 +142,31 @@
     }
 }
 
+//=========================================================== 
+//  locationManager 
+//=========================================================== 
+- (CLLocationManager *)locationManager
+{
+    if (!_locationManagerIsSet) {
+		CLLocationManager *newlocationManager = [[CLLocationManager alloc] init];
+		self.locationManager = newlocationManager;
+        locationManager.delegate = (id)self;
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+        locationManager.distanceFilter = 1.0f;
+		[newlocationManager release];
+		_locationManagerIsSet = YES;
+	}
+	return locationManager; 
+}
+- (void)setLocationManager:(CLLocationManager *)thelocationManager
+{
+    if (locationManager != thelocationManager) {
+        [locationManager release];
+        locationManager = [thelocationManager retain];
+		_locationManagerIsSet = YES;
+		[self performInitialSetup];
+    }
+}
 
 
 -(void) dealloc
@@ -156,7 +174,7 @@
 	LogMethod();
 
     [self setShowsUserLocation:NO];
-    [locationManager release];
+    [self.locationManager release];
     [self.userDot release];
     self.userDot = nil;
 	self.contents = nil;
@@ -789,7 +807,7 @@
     NSDate* eventDate = newLocation.timestamp;
     NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
     if (abs(howRecent) < 20.0){
-        userLocation.latitude = newLocation.coordinate.latitude;
+         userLocation.latitude = newLocation.coordinate.latitude;
         userLocation.longitude = newLocation.coordinate.longitude;
         self.radius = newLocation.horizontalAccuracy;
         [self updateUserMarker];
