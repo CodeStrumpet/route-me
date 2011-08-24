@@ -813,15 +813,6 @@
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error 
-{
-    // -------  Main application will take care of this kind of error presentation (only acceptable solution for catching it in Route-Me would be to add a delegate method to RMMapViewDelegate...
-    NSString *errorType = (error.code == kCLErrorDenied) ? @"Access Denied" : @"Unknown Error";
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error getting Location" message:errorType delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles:nil]; 
-    [alert show]; 
-    [alert release];
-}
-
 -(void)setShowsUserLocation:(BOOL)shows {
     if(shows){
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(goingInBackground:) name:UIApplicationDidEnterBackgroundNotification object:NULL];
