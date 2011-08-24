@@ -164,7 +164,6 @@
         [locationManager release];
         locationManager = [thelocationManager retain];
 		_locationManagerIsSet = YES;
-		[self performInitialSetup];
     }
 }
 
