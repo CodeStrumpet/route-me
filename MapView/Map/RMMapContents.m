@@ -132,13 +132,12 @@
     
     screenScale = 1.0;
     
-    // *****  Turning off Retina Scaling!!!! 
-    /*  
+
     if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)])
     {
         screenScale = [[[UIScreen mainScreen] valueForKey:@"scale"] floatValue];
     }
-     */
+
     
     
 	boundingMask = RMMapMinWidthBound;
