@@ -815,8 +815,22 @@
 
 -(void)setShowsUserLocation:(BOOL)shows {
     if(shows){
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(goingInBackground:) name:UIApplicationDidEnterBackgroundNotification object:NULL];
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(goingToBeActive:) name:UIApplicationDidBecomeActiveNotification object:NULL];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(appDidEnterBackground:)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(appWillBecomeActive:)
+                                                     name:UIApplicationDidBecomeActiveNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(appWillResignActive:)
+                                                     name:UIApplicationWillResignActiveNotification
+                                                   object:nil];
+
         showsUserLocation = YES;
         [self.locationManager startUpdatingLocation];
     }
@@ -844,13 +858,20 @@
     }
 }
 
--(void)goingInBackground:(NSNotification *)inNotification{
-    [self.locationManager stopUpdatingLocation];
-   // NSLog(@"Going sleep");
+
+#pragma mark -
+#pragma mark Notifications
+
+- (void)appWillBecomeActive:(NSNotification *)notification {
+    [self.locationManager startUpdatingLocation];
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
 }
 
--(void)goingToBeActive:(NSNotification *)inNotification{
-    [self.locationManager startUpdatingLocation];
-   // NSLog(@"Wake up");
+- (void)appWillResignActive:(NSNotification *)notification {
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+}
+
+- (void)appDidEnterBackground:(NSNotification *)notification {
+    [self.locationManager stopUpdatingLocation];
 }
 @end
