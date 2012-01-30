@@ -102,7 +102,7 @@
 
 
 @implementation RMDBMapSource
-
+@synthesize db;
 
 -(id)initWithPath:(NSString*)path {
     return [self initWithPath:path pathIsInBundle:YES];
@@ -151,6 +151,8 @@
 				  center.longitude);
 		} else {
 			RMLog(@"Error opening db map source %@", path);
+            [db release];
+            db = nil;
 		}
 		
 		// init the tile projection

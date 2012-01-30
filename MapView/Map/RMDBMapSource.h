@@ -48,6 +48,8 @@
 	CLLocationCoordinate2D center;
 }
 
+@property (nonatomic, retain) FMDatabase *db;
+
 -(id)initWithPath:(NSString*)path;
 -(id)initWithPath:(NSString *)path pathIsInBundle:(BOOL)pathIsInBundle;
 
