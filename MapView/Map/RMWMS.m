@@ -73,6 +73,10 @@
     urlPrefix = [newUrlPrefix retain];
 }
 
+- (NSString *)urlPrefix {
+    return urlPrefix;
+}
+
 -(NSString *)createBaseGet:(NSString *)bbox size:(CGSize)size
 {
     return [NSString 
