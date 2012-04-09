@@ -203,6 +203,8 @@
 		B8F3FC650EA2E792004D8F85 /* RMMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = B8F3FC630EA2E792004D8F85 /* RMMarker.m */; };
 		B8FA92190E9315EC003A9FE6 /* RMLayerCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = B8FA92170E9315EC003A9FE6 /* RMLayerCollection.h */; };
 		B8FA921A0E9315EC003A9FE6 /* RMLayerCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = B8FA92180E9315EC003A9FE6 /* RMLayerCollection.m */; };
+		BB50125A153395860074573C /* StamenMapSource.h in Headers */ = {isa = PBXBuildFile; fileRef = BB501258153395860074573C /* StamenMapSource.h */; };
+		BB50125B153395860074573C /* StamenMapSource.m in Sources */ = {isa = PBXBuildFile; fileRef = BB501259153395860074573C /* StamenMapSource.m */; };
 		D1437B34122869E400888DAE /* RMDBTileImage.m in Sources */ = {isa = PBXBuildFile; fileRef = D1437B30122869E400888DAE /* RMDBTileImage.m */; };
 		D1437B35122869E400888DAE /* RMDBTileImage.h in Headers */ = {isa = PBXBuildFile; fileRef = D1437B31122869E400888DAE /* RMDBTileImage.h */; };
 		D1437B36122869E400888DAE /* RMDBMapSource.m in Sources */ = {isa = PBXBuildFile; fileRef = D1437B32122869E400888DAE /* RMDBMapSource.m */; };
@@ -391,6 +393,8 @@
 		B8F3FC630EA2E792004D8F85 /* RMMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMMarker.m; sourceTree = "<group>"; };
 		B8FA92170E9315EC003A9FE6 /* RMLayerCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMLayerCollection.h; sourceTree = "<group>"; };
 		B8FA92180E9315EC003A9FE6 /* RMLayerCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMLayerCollection.m; sourceTree = "<group>"; };
+		BB501258153395860074573C /* StamenMapSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StamenMapSource.h; sourceTree = "<group>"; };
+		BB501259153395860074573C /* StamenMapSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StamenMapSource.m; sourceTree = "<group>"; };
 		C7A967500E8412930031BA75 /* RMAbstractMercatorWebSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMAbstractMercatorWebSource.h; sourceTree = "<group>"; };
 		C7A967510E8412930031BA75 /* RMAbstractMercatorWebSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMAbstractMercatorWebSource.m; sourceTree = "<group>"; };
 		C7A9675C0E84134B0031BA75 /* RMVirtualEarthSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMVirtualEarthSource.h; sourceTree = "<group>"; };
@@ -698,6 +702,8 @@
 				DD55FD1212FB40E000B6FE24 /* RMMBTilesTileSource.m */,
 				447420D81302B2F5004D6E8A /* RMWMSSource.h */,
 				447420D91302B2F5004D6E8A /* RMWMSSource.m */,
+				BB501258153395860074573C /* StamenMapSource.h */,
+				BB501259153395860074573C /* StamenMapSource.m */,
 			);
 			name = "Tile Source";
 			sourceTree = "<group>";
@@ -891,6 +897,7 @@
 				17F02BB11319BA4B00260C6B /* RouteMe.h in Headers */,
 				175701DE1323C2E900A5D314 /* NSUserDefaults+RouteMe.h in Headers */,
 				93CA73A013E78D4F0043F083 /* RMUserLocationMarker.h in Headers */,
+				BB50125A153395860074573C /* StamenMapSource.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1196,6 +1203,7 @@
 				4474211C1302B60A004D6E8A /* RMWMS.m in Sources */,
 				175701DF1323C2E900A5D314 /* NSUserDefaults+RouteMe.m in Sources */,
 				93CA73A113E78D4F0043F083 /* RMUserLocationMarker.m in Sources */,
+				BB50125B153395860074573C /* StamenMapSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
