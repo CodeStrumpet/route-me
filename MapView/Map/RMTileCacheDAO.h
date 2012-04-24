@@ -35,6 +35,7 @@
 }
 
 -(id) initWithDatabase: (NSString*)path;
+-(void)configureDBForFirstUse;
 
 -(NSUInteger) count;
 -(NSData*) dataForTile: (uint64_t) tileHash;

@@ -55,4 +55,6 @@
 - (void) setMinZoom: (NSUInteger) aMinZoom;
 - (void) setMaxZoom: (NSUInteger) aMaxZoom;
 
+- (float) limitFromNormalisedZoom: (float) zoom;
+
 @end

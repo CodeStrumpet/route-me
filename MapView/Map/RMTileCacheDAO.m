@@ -37,8 +37,18 @@
 {
 	[db executeUpdate:@"CREATE TABLE IF NOT EXISTS ZCACHE (ztileHash INTEGER PRIMARY KEY, zlastUsed DOUBLE, zdata BLOB)"];
     [db executeUpdate:@"CREATE INDEX IF NOT EXISTS zlastUsedIndex ON ZCACHE(zLastUsed)"];
+    
+    BOOL crashOnErrors = [db crashOnErrors];
+	[db setCrashOnErrors:NO];	
+    NSLog(@"Checking for zInserted");
+	[db executeQuery:@"SELECT zInserted from ZCACHE"];
+	if ([db hadError]) {
+		[db executeUpdate:@"ALTER TABLE ZCACHE ADD COLUMN zInserted DOUBLE"];
+	}
+	[db setCrashOnErrors:crashOnErrors];
+    
     // adding more than once does not seem to break anything
-    [db executeUpdate:@"ALTER TABLE ZCACHE ADD COLUMN zInserted DOUBLE"];
+    //[db executeUpdate:@"ALTER TABLE ZCACHE ADD COLUMN zInserted DOUBLE"];
     [db executeUpdate:@"CREATE INDEX IF NOT EXISTS zInsertedIndex ON ZCACHE(zInserted)"];
 }
 
