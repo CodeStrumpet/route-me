@@ -27,24 +27,18 @@
 
 #import "RMAbstractMercatorTileSource.h"
 #import "RMProjection.h"
+#import "FMDatabase.h"
 
 @interface RMDBMapSource : RMAbstractMercatorTileSource
 {
     NSString *uniqueTilecacheKey;
 }
 
-@property (nonatomic, retain) FMDatabase *db;
+@property (nonatomic, retain) FMDatabase *localDB;
 @property (nonatomic, retain) NSString *uniqueTilecacheKey;
 
 -(id)initWithPath:(NSString*)path;
 -(id)initWithPath:(NSString *)path pathIsInBundle:(BOOL)pathIsInBundle;
-
--(int)tileSideLength;
-
--(float) minZoom;
--(float) maxZoom;
-
-- (id)initWithPath:(NSString *)path;
 
 - (CLLocationCoordinate2D)topLeftOfCoverage;
 - (CLLocationCoordinate2D)bottomRightOfCoverage;

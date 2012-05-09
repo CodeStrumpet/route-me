@@ -99,14 +99,7 @@
 #pragma mark --- end constants ----
 
 @interface RMDBMapSource (Preferences)
-{
-    FMDatabaseQueue *queue;
-    
-    // coverage area
-	CLLocationCoordinate2D topLeft;
-	CLLocationCoordinate2D bottomRight;
-	CLLocationCoordinate2D center;
-}
+
 - (NSString *)getPreferenceAsString:(NSString *)name;
 - (float)getPreferenceAsFloat:(NSString *)name;
 - (int)getPreferenceAsInt:(NSString *)name;
@@ -115,9 +108,17 @@
 
 #pragma mark -
 
-@implementation RMDBMapSource
-@synthesize db;
+@implementation RMDBMapSource {
+    FMDatabaseQueue *queue;
+    
+    // coverage area
+	CLLocationCoordinate2D topLeft;
+	CLLocationCoordinate2D bottomRight;
+	CLLocationCoordinate2D center;
+}
+
 @synthesize uniqueTilecacheKey;
+@synthesize localDB;
 
 -(id)initWithPath:(NSString *)path pathIsInBundle:(BOOL)pathIsInBundle {
 	self = [super init];
@@ -131,8 +132,8 @@
             fullPath = path;
         }
 		NSLog(@"Trying to Open db map source %@", fullPath);
-		db = [[FMDatabase alloc] initWithPath:fullPath];
-		if ([db open]) {
+		self.localDB = [[FMDatabase alloc] initWithPath:fullPath];
+		if ([self.localDB open]) {
 			RMLog(@"Opening db map source %@", path);
 			
 			// get the tile side length
@@ -162,8 +163,7 @@
 				  center.longitude);
 		} else {
 			RMLog(@"Error opening db map source %@", path);
-            [db release];
-            db = nil;
+            [self setLocalDB:nil];
 		}
 		
 		// init the tile projection
@@ -233,7 +233,7 @@
 
 - (void)dealloc
 {
-    [db release];
+    [self setLocalDB:nil];
     [uniqueTilecacheKey release]; uniqueTilecacheKey = nil;
     [queue release]; queue = nil;
 	[super dealloc];

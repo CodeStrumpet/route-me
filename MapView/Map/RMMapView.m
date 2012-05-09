@@ -106,12 +106,6 @@
 
 @synthesize decelerationMode;
 
-@synthesize userDot;
-@synthesize locationManager;
-@synthesize showsUserLocation;
-@synthesize userLocation;
-@synthesize radius;
-
 @synthesize boundingMask;
 @synthesize minZoom, maxZoom;
 @synthesize screenScale;
@@ -180,8 +174,6 @@
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     LogMethod();
-    
-	showsUserLocation = NO;
     
     if (!(self = [super initWithCoder:aDecoder]))
         return nil;
@@ -264,37 +256,9 @@
     }
 }
 
-//=========================================================== 
-//  locationManager 
-//=========================================================== 
-- (CLLocationManager *)locationManager
-{
-    if (!_locationManagerIsSet) {
-		CLLocationManager *newlocationManager = [[CLLocationManager alloc] init];
-		self.locationManager = newlocationManager;
-        locationManager.delegate = (id)self;
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-        locationManager.distanceFilter = 1.0f;
-		[newlocationManager release];
-		_locationManagerIsSet = YES;
-	}
-	return locationManager; 
-}
-- (void)setLocationManager:(CLLocationManager *)thelocationManager
-{
-    if (locationManager != thelocationManager) {
-        [locationManager release];
-        locationManager = [thelocationManager retain];
-		_locationManagerIsSet = YES;
-    }
-}
-
 - (void)dealloc
 {
     LogMethod();
-    [self.locationManager release];
-    [self.userDot release];
-    self.userDot = nil;
 
     [self setDelegate:nil];
     [self setBackgroundView:nil];
@@ -1862,81 +1826,5 @@
 {
     [self correctScreenPosition:annotation];
     return annotation.position;
-}
-
-#pragma mark - 
-#pragma mark CLLocationManagerDelegate Methods 
--(void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation 
-{ 
-    NSDate* eventDate = newLocation.timestamp;
-    NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
-    if (abs(howRecent) < 20.0){
-         userLocation.latitude = newLocation.coordinate.latitude;
-        userLocation.longitude = newLocation.coordinate.longitude;
-        self.radius = newLocation.horizontalAccuracy;
-        [self updateUserMarker];
-    }
-}
-
--(void)setShowsUserLocation:(BOOL)shows {
-    if(shows){
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(appDidEnterBackground:)
-                                                     name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(appWillBecomeActive:)
-                                                     name:UIApplicationDidBecomeActiveNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(appWillResignActive:)
-                                                     name:UIApplicationWillResignActiveNotification
-                                                   object:nil];
-
-        showsUserLocation = YES;
-        [self.locationManager startUpdatingLocation];
-    }
-    else{
-       [[NSNotificationCenter defaultCenter] removeObserver:self];
-       showsUserLocation = NO;
-       [self.locationManager stopUpdatingLocation];
-       if(self.userDot != nil){
-           [self.userDot setHidden:YES];
-       }
-    }
-}
-
-
-- (void)updateUserMarker
-{
-    if(self.userDot == nil){
-        RMUserLocationMarker *newMarker = [[RMUserLocationMarker alloc] initWithContents:self.contents pinLocation:self.userLocation originalRadius:self.radius];
-        self.userDot = newMarker;
-        [newMarker release];
-    }
-    else{
-      [self.userDot setHidden:NO]; 
-      [self.userDot updateLocation:self.userLocation  newRadius:self.radius]; 
-    }
-}
-
-
-#pragma mark -
-#pragma mark Notifications
-
-- (void)appWillBecomeActive:(NSNotification *)notification {
-    [self.locationManager startUpdatingLocation];
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
-}
-
-- (void)appWillResignActive:(NSNotification *)notification {
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
-}
-
-- (void)appDidEnterBackground:(NSNotification *)notification {
-    [self.locationManager stopUpdatingLocation];
 }
 @end

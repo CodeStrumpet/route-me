@@ -110,14 +110,6 @@ typedef enum {
 @property (nonatomic, readonly) RMProjectedPoint projectedOrigin;
 @property (nonatomic, readonly) RMProjectedSize projectedViewSize;
 
-// User dot
-@property (nonatomic, retain) RMUserLocationMarker *userDot; 
-@property (nonatomic, retain) CLLocationManager *locationManager;
-@property (nonatomic) BOOL showsUserLocation;
-@property (nonatomic) CLLocationCoordinate2D userLocation;
-@property (nonatomic) float radius;
-// End of user dot
-
 @property (nonatomic, assign)   double metersPerPixel;
 @property (nonatomic, readonly) double scaledMetersPerPixel;
 @property (nonatomic, readonly) double scaleDenominator; /// The denominator in a cartographic scale like 1/24000, 1/50000, 1/2000000.
