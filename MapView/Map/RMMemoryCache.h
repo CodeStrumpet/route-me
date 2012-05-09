@@ -29,14 +29,15 @@
 #import "RMTile.h"
 #import "RMTileCache.h"
 
-@interface RMMemoryCache : NSObject<RMTileCache> {
+@interface RMMemoryCache : NSObject <RMTileCache>
+{
 	NSMutableDictionary *cache;
-
-	int capacity;
+	NSUInteger capacity;
 }
 
--(id)initWithCapacity: (NSUInteger) _capacity;
+- (id)initWithCapacity:(NSUInteger)aCapacity;
+
 /// Remove the least-recently used image from cache, if cache is at or over capacity. Removes only 1 image.
--(void)makeSpaceInCache;
+- (void)makeSpaceInCache;
 
 @end

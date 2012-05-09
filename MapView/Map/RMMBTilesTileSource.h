@@ -31,47 +31,31 @@
 //  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 //  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-//  http://mapbox.com/documentation/mbtiles-file-format
+//  http://mbtiles.org
+//
+//  See samples/MBTilesDemo for example usage
 //
 
 #import <Foundation/Foundation.h>
+
 #import "RMTileSource.h"
 
 @class RMFractalTileProjection;
-@class FMDatabase;
+@class FMDatabaseQueue;
 
 #define kMBTilesDefaultTileSize 256
 #define kMBTilesDefaultMinTileZoom 0
-#define kMBTilesDefaultMaxTileZoom 18
-#define kMBTilesDefaultLatLonBoundingBox ((RMSphericalTrapezium){ .northeast = { .latitude =  90, .longitude =  180 }, \
-                                                                  .southwest = { .latitude = -90, .longitude = -180 } })
+#define kMBTilesDefaultMaxTileZoom 22
+#define kMBTilesDefaultLatLonBoundingBox ((RMSphericalTrapezium){.northEast = {.latitude = 90, .longitude = 180}, .southWest = {.latitude = -90, .longitude = -180}})
 
 @interface RMMBTilesTileSource : NSObject <RMTileSource>
 {
     RMFractalTileProjection *tileProjection;
-    FMDatabase *db;
+    FMDatabaseQueue *queue;
 }
 
 - (id)initWithTileSetURL:(NSURL *)tileSetURL;
-- (int)tileSideLength;
-- (void)setTileSideLength:(NSUInteger)aTileSideLength;
-- (RMTileImage *)tileImage:(RMTile)tile;
-- (NSString *)tileURL:(RMTile)tile;
-- (NSString *)tileFile:(RMTile)tile;
-- (NSString *)tilePath;
-- (id <RMMercatorToTileProjection>)mercatorToTileProjection;
-- (RMProjection *)projection;
-- (float)minZoom;
-- (float)maxZoom;
-- (void)setMinZoom:(NSUInteger)aMinZoom;
-- (void)setMaxZoom:(NSUInteger)aMaxZoom;
-- (RMSphericalTrapezium)latitudeLongitudeBoundingBox;
-- (void)didReceiveMemoryWarning;
-- (NSString *)uniqueTilecacheKey;
-- (NSString *)shortName;
-- (NSString *)longDescription;
-- (NSString *)shortAttribution;
-- (NSString *)longAttribution;
-- (void)removeAllCachedImages;
+- (BOOL)coversFullWorld;
+- (NSString *)legend;
 
 @end

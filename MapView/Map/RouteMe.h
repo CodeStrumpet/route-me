@@ -1,7 +1,7 @@
 //
 // RouteMe.h
 // 
-// Copyright (c) 2008-2011, Route-Me Contributors
+// Copyright (c) 2008-2012, Route-Me Contributors
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,15 +30,10 @@
 
 // P.S. The list isn't full. Need to add missing header files, when required
 
-#import "RMAbstractMercatorWebSource.h"
-#import "RMCircle.h"
-#import "RMLayerCollection.h"
-#import "RMMapContents.h"
 #import "RMMapView.h"
-#import "RMMarkerManager.h"
-#import "RMPath.h"
 #import "RMProjection.h"
 #import "RMTileLoader.h"
 #import "RMTileSource.h"
+#import "RMAbstractMercatorWebSource.h"
 
 #import "NSUserDefaults+RouteMe.h"

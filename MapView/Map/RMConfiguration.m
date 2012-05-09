@@ -27,73 +27,73 @@
 
 #import "RMConfiguration.h"
 
-static RMConfiguration* RMConfigurationSharedInstance = nil;
+static RMConfiguration *RMConfigurationSharedInstance = nil;
 
 @implementation RMConfiguration
-
-+ (RMConfiguration*) configuration
 {
-	
-	@synchronized (RMConfigurationSharedInstance) {
-		if (RMConfigurationSharedInstance != nil) return RMConfigurationSharedInstance;
-	
-		/// \bug magic string literals
-		RMConfigurationSharedInstance = [[RMConfiguration alloc] 
-										 initWithPath: [[NSBundle mainBundle] pathForResource:@"routeme" ofType:@"plist"]];
+	id propertyList;
+}
+
++ (RMConfiguration *)configuration
+{
+	@synchronized (RMConfigurationSharedInstance)
+    {
+		if (RMConfigurationSharedInstance != nil)
+            return RMConfigurationSharedInstance;
+
+		RMConfigurationSharedInstance = [[RMConfiguration alloc] initWithPath:[[NSBundle mainBundle] pathForResource:@"routeme" ofType:@"plist"]];
 
 		return RMConfigurationSharedInstance;
 	}
+
 	return nil;
 }
 
-
-- (RMConfiguration*) initWithPath: (NSString*) path
+- (RMConfiguration *)initWithPath:(NSString *)path
 {
-	self = [super init];
-	
-	if (self==nil) return nil;
-	
+	if (!(self = [super init]))
+        return nil;
+
 	NSData *plistData;
 	NSString *error;
 	NSPropertyListFormat format;
 
-	if (path==nil) 
-	{
-		propList = nil;
+	if (path == nil)
+    {
+		propertyList = nil;
 		return self;
 	}
-	
-	RMLog(@"reading configuration from %@", path);	
+
+	RMLog(@"reading configuration from %@", path);
+
 	plistData = [NSData dataWithContentsOfFile:path];
 
-	propList = [[NSPropertyListSerialization 
-					propertyListFromData:plistData
-					mutabilityOption:NSPropertyListImmutable
-					format:&format
-					errorDescription:&error] retain];
+	propertyList = [[NSPropertyListSerialization propertyListFromData:plistData
+                                                 mutabilityOption:NSPropertyListImmutable
+                                                           format:&format
+                                                 errorDescription:&error] retain];
 
-	if(!propList)
-	{
+	if (!propertyList)
+    {
 		RMLog(@"problem reading from %@: %@", path, error);
 		[error release];
 	}
 
 	return self;
 }
-	
 
-- (void) dealloc
+- (void)dealloc
 {
-	[propList release];
+	[propertyList release]; propertyList = nil;
 	[super dealloc];
 }
 
-
-- (NSDictionary*) cacheConfiguration
+- (NSDictionary *)cacheConfiguration
 {
-	if (propList==nil) return nil;
-	/// \bug magic string literals
-	return [propList objectForKey: @"caches"];
+	if (propertyList == nil)
+        return nil;
+
+	return [propertyList objectForKey:@"caches"];
 }
 
 @end

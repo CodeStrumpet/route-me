@@ -1,7 +1,7 @@
 //
 //  RMMapView.h
 //
-// Copyright (c) 2008-2009, Route-Me Contributors
+// Copyright (c) 2008-2012, Route-Me Contributors
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,189 +25,227 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/*! \mainpage Route-Me Map Framework 
-
-\section intro_sec Introduction
-
-Route-Me is an open source Objective-C framework for displaying maps on Cocoa Touch devices 
-(the iPhone, and the iPod Touch). It was written in 2008 by Joseph Gentle as the basis for a transit
-routing app. The transit app was not completed, because the government agencies involved chose not to release
-the necessary data under reasonable licensing terms. The project was released as open source under the New BSD license (http://www.opensource.org/licenses/bsd-license.php) 
-in September, 2008, and
-is hosted on Google Code (http://code.google.com/p/route-me/).
-
- Route-Me provides a UIView subclass with a panning, zooming map. Zoom level, source of map data, map center,
- marker overlays, and path overlays are all supported.
- \section license_sec License
- Route-Me is licensed under the New BSD license.
- 
- In any app that uses the Route-Me library, include the following text on your "preferences" or "about" screen: "Uses Route-Me map library, (c) 2008-2009 Route-Me Contributors". 
- 
-\section install_sec Installation
- 
-Because Route-Me is under rapid development as of early 2009, the best way to install Route-Me is use
-Subversion and check out a copy of the repository:
-\verbatim
-svn checkout http://route-me.googlecode.com/svn/trunk/ route-me-read-only
-\endverbatim
-
- There are numerous sample applications in the Subversion repository.
- 
- To embed Route-Me maps in your Xcode project, follow the example given in samples/SampleMap or samples/ProgrammaticMap. The instructions in 
- the Embedding Guide at 
- http://code.google.com/p/route-me/wiki/EmbeddingGuide are out of date as of April 20, 2009. To create a static version of Route-Me, follow these 
- instructions instead: http://code.google.com/p/route-me/source/browse/trunk/MapView/README-library-build.rtf
- 
-\section maps_sec Map Data
- 
- Route-Me supports map data served from many different sources:
- - the Open Street Map project's server.
- - CloudMade, which provides commercial servers delivering Open Street Map data.
- - Microsoft Virtual Earth.
- - Open Aerial Map.
- - Yahoo! Maps.
- 
- Each of these data sources has different license restrictions and fees. In particular, Yahoo! Maps are 
- effectively unusable in Route-Me due to their license terms; the Yahoo! access code is provided for demonstration
- purposes only.
- 
- You must contact the data vendor directly and arrange licensing if necessary, including obtaining your own
- access key. Follow their rules.
- 
- If you have your own data you'd like to use with Route-Me, serving it through your own Mapnik installation
- looks like the best bet. Mapnik is an open source web-based map delivery platform. For more information on
- Mapnik, see http://www.mapnik.org/ .
- 
- \section news_sec Project News and Updates
- For the most current information on Route-Me, see these sources:
- - wiki: http://code.google.com/p/route-me/w/list
- - project email reflector: http://groups.google.com/group/route-me-map
- - list of all project RSS feeds: http://code.google.com/p/route-me/feeds
- - applications using Route-Me: http://code.google.com/p/route-me/wiki/RoutemeApplications
- 
- */
-
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CGGeometry.h>
 #import <CoreLocation/CoreLocation.h>
 
-#import "RMNotifications.h"
+#import "RMGlobalConstants.h"
 #import "RMFoundation.h"
-#import "RMLatLong.h"
 #import "RMMapViewDelegate.h"
-#import "RMMapContents.h"
-#import "RMUserLocationMarker.h"
+#import "RMTile.h"
+#import "RMProjection.h"
+#import "RMMapOverlayView.h"
+#import "RMMapTiledLayerView.h"
 
-/*! 
- \struct RMGestureDetails
- iPhone-specific mapview stuff. Handles event handling, whatnot.
- */
-typedef struct {
-	CGPoint center;
-	CGFloat angle;
-	float averageDistanceFromCenter;
-	int numTouches;
-} RMGestureDetails;
+// constants for boundingMask
+enum {
+    RMMapNoMinBound		= 0, // Map can be zoomed out past view limits
+    RMMapMinHeightBound	= 1, // Minimum map height when zooming out restricted to view height
+    RMMapMinWidthBound	= 2  // Minimum map width when zooming out restricted to view width (default)
+};
 
-@class RMMapContents;
+typedef enum {
+    RMMapDecelerationNormal,
+    RMMapDecelerationFast,
+    RMMapDecelerationOff
+} RMMapDecelerationMode;
 
-/*! 
- \brief Wrapper around RMMapContents for the iPhone.
- 
- It implements event handling; but that's about it. All the interesting map
- logic is done by RMMapContents. There is exactly one RMMapView instance for each RMMapContents instance.
- 
- A -forwardInvocation method exists for RMMap, and forwards all unhandled messages to the RMMapContents instance.
- 
- \bug No accessors for enableDragging, enableZoom, deceleration, decelerationFactor. Changing enableDragging does not change multitouchEnabled for the view.
- */
-@interface RMMapView : UIView <RMMapContentsFacade, RMMapContentsAnimationCallback>
+@class RMProjection;
+@class RMFractalTileProjection;
+@class RMTileCache;
+@class RMMapLayer;
+@class RMMapTiledLayerView;
+@class RMMarker;
+@class RMAnnotation;
+@class RMQuadTree;
+
+@protocol RMMercatorToTileProjection;
+@protocol RMTileSource;
+@protocol RMMapTiledLayerViewDelegate;
+
+@interface RMMapView : UIView <UIScrollViewDelegate, RMMapOverlayViewDelegate, RMMapTiledLayerViewDelegate>
 {
-	RMMapContents *contents;
-	id<RMMapViewDelegate> delegate;
-	BOOL enableDragging;
-	BOOL enableZoom;
-        BOOL enableRotate;
-	RMGestureDetails lastGesture;
-	float decelerationFactor;
-	BOOL deceleration;
-        CGFloat rotation;
-    
-    RMUserLocationMarker *userDot;
-    CLLocationManager *locationManager;
-    BOOL showsUserLocation;
-    CLLocationCoordinate2D userLocation;
-    float radius;
-	
-@private
-   	BOOL _delegateHasBeforeMapMove;
-	BOOL _delegateHasAfterMapMove;
-	BOOL _delegateHasBeforeMapZoomByFactor;
-	BOOL _delegateHasAfterMapZoomByFactor;
-	BOOL _delegateHasMapViewRegionDidChange;
-	BOOL _delegateHasBeforeMapRotate;
-	BOOL _delegateHasAfterMapRotate;
-	BOOL _delegateHasDoubleTapOnMap;
-	BOOL _delegateHasSingleTapOnMap;
-	BOOL _delegateHasTapOnMarker;
-	BOOL _delegateHasTapOnLabelForMarker;
-	BOOL _delegateHasAfterMapTouch;
-	BOOL _delegateHasShouldDragMarker;
-	BOOL _delegateHasDidDragMarker;
-	BOOL _delegateHasDragMarkerPosition;
-	
-	NSTimer *_decelerationTimer;
-	CGSize _decelerationDelta;
-	
-	BOOL _constrainMovement;
-	RMProjectedPoint NEconstraint, SWconstraint;
-	
-	BOOL _contentsIsSet; // "contents" must be set, but is initialized lazily to allow apps to override defaults in -awakeFromNib
-    BOOL _locationManagerIsSet;
+    id <RMMapViewDelegate> delegate;
+
+    /// projection objects to convert from latitude/longitude to meters,
+    /// from projected meters to tile coordinates
+    RMProjection *projection;
+    RMFractalTileProjection *mercatorToTileProjection;
+
+    /// subview for the background image displayed while tiles are loading. Set its contents by providing your own "loading.png".
+    UIView *backgroundView;
+    UIScrollView *mapScrollView;
+    RMMapTiledLayerView *tiledLayerView;
+    RMMapOverlayView *overlayView;
+
+    double metersPerPixel;
+    BOOL adjustTilesForRetinaDisplay;
+
+    NSMutableSet   *annotations;
+    NSMutableSet   *visibleAnnotations;
+    RMQuadTree     *quadTree;
+    BOOL            enableClustering, positionClusterMarkersAtTheGravityCenter;
+    CGSize          clusterMarkerSize, clusterAreaSize;
+
+    id <RMTileSource> tileSource;
+    RMTileCache *tileCache; // Generic tile cache
+
+    /// minimum and maximum zoom number allowed for the view. #minZoom and #maxZoom must be within the limits of #tileSource but can be stricter; they are clamped to tilesource limits if needed.
+    float minZoom, maxZoom, zoom;
+    float screenScale;
+
+    NSUInteger boundingMask;
 }
 
-/// Any other functionality you need to manipulate the map you can access through this
-/// property. The RMMapContents class holds the actual map bits.
-@property (nonatomic, retain) RMMapContents *contents;
+@property (nonatomic, assign) id <RMMapViewDelegate> delegate;
 
 // View properties
-@property (readwrite) BOOL enableDragging;
-@property (readwrite) BOOL enableZoom;
-@property (readwrite) BOOL enableRotate;
+@property (nonatomic, assign) BOOL enableDragging;
+@property (nonatomic, assign) RMMapDecelerationMode decelerationMode;
 
+@property (nonatomic, assign) CLLocationCoordinate2D centerCoordinate;
+@property (nonatomic, assign) RMProjectedPoint centerProjectedPoint;
+@property (nonatomic, assign) RMProjectedRect projectedBounds;
+
+@property (nonatomic, readonly) RMProjectedPoint projectedOrigin;
+@property (nonatomic, readonly) RMProjectedSize projectedViewSize;
+
+// User dot
 @property (nonatomic, retain) RMUserLocationMarker *userDot; 
 @property (nonatomic, retain) CLLocationManager *locationManager;
 @property (nonatomic) BOOL showsUserLocation;
 @property (nonatomic) CLLocationCoordinate2D userLocation;
 @property (nonatomic) float radius;
+// End of user dot
 
-@property (nonatomic, retain, readonly) RMMarkerManager *markerManager;
+@property (nonatomic, assign)   double metersPerPixel;
+@property (nonatomic, readonly) double scaledMetersPerPixel;
+@property (nonatomic, readonly) double scaleDenominator; /// The denominator in a cartographic scale like 1/24000, 1/50000, 1/2000000.
+@property (nonatomic, readonly) float screenScale;
+@property (nonatomic, assign)   NSUInteger boundingMask;
 
-// do not retain the delegate so you can let the corresponding controller implement the
-// delegate without circular references
-@property (assign) id<RMMapViewDelegate> delegate;
-@property (readwrite) float decelerationFactor;
-@property (readwrite) BOOL deceleration;
+@property (nonatomic, assign)   BOOL adjustTilesForRetinaDisplay;
+@property (nonatomic, readonly) float adjustedZoomForRetinaDisplay; // takes adjustTilesForRetinaDisplay and screen scale into account
 
-@property (readonly) CGFloat rotation;
+@property (nonatomic, assign) float zoom; /// zoom level is clamped to range (minZoom, maxZoom)
+@property (nonatomic, assign) float minZoom;
+@property (nonatomic, assign) float maxZoom;
 
-- (id)initWithFrame:(CGRect)frame WithLocation:(CLLocationCoordinate2D)latlong;
+@property (nonatomic, retain) RMQuadTree *quadTree;
+@property (nonatomic, assign) BOOL enableClustering;
+@property (nonatomic, assign) BOOL positionClusterMarkersAtTheGravityCenter;
+@property (nonatomic, assign) CGSize clusterMarkerSize;
+@property (nonatomic, assign) CGSize clusterAreaSize;
 
-/// recenter the map on #latlong, expressed as CLLocationCoordinate2D (latitude/longitude)
-- (void)moveToLatLong: (CLLocationCoordinate2D)latlong;
+@property (nonatomic, readonly) RMProjection *projection;
+@property (nonatomic, readonly) id <RMMercatorToTileProjection> mercatorToTileProjection;
+
+@property (nonatomic, retain) id <RMTileSource> tileSource;
+@property (nonatomic, retain) RMTileCache *tileCache;
+
+@property (nonatomic, retain) UIView *backgroundView;
+
+#pragma mark -
+#pragma mark Initializers
+
+- (id)initWithFrame:(CGRect)frame andTilesource:(id <RMTileSource>)newTilesource;
+
+/// designated initializer
+- (id)initWithFrame:(CGRect)frame
+      andTilesource:(id <RMTileSource>)newTilesource
+   centerCoordinate:(CLLocationCoordinate2D)initialCenterCoordinate
+          zoomLevel:(float)initialZoomLevel
+       maxZoomLevel:(float)maxZoomLevel
+       minZoomLevel:(float)minZoomLevel
+    backgroundImage:(UIImage *)backgroundImage;
+
+- (void)setFrame:(CGRect)frame;
+
+#pragma mark -
+#pragma mark Movement
+
+/// recenter the map on #coordinate, expressed as CLLocationCoordinate2D (latitude/longitude)
+- (void)setCenterCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated;
+
 /// recenter the map on #aPoint, expressed in projected meters
-- (void)moveToProjectedPoint: (RMProjectedPoint)aPoint;
+- (void)setCenterProjectedPoint:(RMProjectedPoint)aPoint animated:(BOOL)animated;
 
-- (void)moveBy: (CGSize) delta;
+- (void)moveBy:(CGSize)delta;
 
--(void)setConstraintsSW:(CLLocationCoordinate2D)sw NE:(CLLocationCoordinate2D)ne;
-- (void)setProjectedContraintsSW:(RMProjectedPoint)sw NE:(RMProjectedPoint)ne;
+#pragma mark -
+#pragma mark Zoom
 
-- (void)zoomByFactor: (float) zoomFactor near:(CGPoint) aPoint;
-- (void)zoomByFactor: (float) zoomFactor near:(CGPoint) aPoint animated:(BOOL)animated;
+/// recenter the map on #boundsRect, expressed in projected meters
+- (void)setProjectedBounds:(RMProjectedRect)boundsRect animated:(BOOL)animated;
 
-- (void)didReceiveMemoryWarning;
+- (void)zoomByFactor:(float)zoomFactor near:(CGPoint)center animated:(BOOL)animated;
 
-- (void)setRotation:(CGFloat)angle;
+- (void)zoomInToNextNativeZoomAt:(CGPoint)pivot animated:(BOOL)animated;
+- (void)zoomOutToNextNativeZoomAt:(CGPoint)pivot animated:(BOOL)animated;
+
+- (void)zoomWithLatitudeLongitudeBoundsSouthWest:(CLLocationCoordinate2D)southWest northEast:(CLLocationCoordinate2D)northEast animated:(BOOL)animated;
+
+- (float)nextNativeZoomFactor;
+- (float)previousNativeZoomFactor;
+
+- (void)setMetersPerPixel:(double)newMetersPerPixel animated:(BOOL)animated;
+
+#pragma mark -
+#pragma mark Conversions
+
+- (CGPoint)projectedPointToPixel:(RMProjectedPoint)projectedPoint;
+- (CGPoint)coordinateToPixel:(CLLocationCoordinate2D)coordinate;
+
+- (RMProjectedPoint)pixelToProjectedPoint:(CGPoint)pixelCoordinate;
+- (CLLocationCoordinate2D)pixelToCoordinate:(CGPoint)pixelCoordinate;
+
+- (RMProjectedPoint)coordinateToProjectedPoint:(CLLocationCoordinate2D)coordinate;
+- (CLLocationCoordinate2D)projectedPointToCoordinate:(RMProjectedPoint)projectedPoint;
+
+- (RMProjectedSize)viewSizeToProjectedSize:(CGSize)screenSize;
+- (CGSize)projectedSizeToViewSize:(RMProjectedSize)projectedSize;
+
+- (CLLocationCoordinate2D)normalizeCoordinate:(CLLocationCoordinate2D)coordinate;
+- (RMTile)tileWithCoordinate:(CLLocationCoordinate2D)coordinate andZoom:(int)zoom;
+
+/// returns the smallest bounding box containing the entire view
+- (RMSphericalTrapezium)latitudeLongitudeBoundingBox;
+/// returns the smallest bounding box containing a rectangular region of the view
+- (RMSphericalTrapezium)latitudeLongitudeBoundingBoxFor:(CGRect) rect;
+
+#pragma mark -
+#pragma mark Bounds
+
+- (BOOL)projectedBounds:(RMProjectedRect)bounds containsPoint:(RMProjectedPoint)point;
+- (BOOL)tileSourceBoundsContainProjectedPoint:(RMProjectedPoint)point;
+
+- (void)setConstraintsSouthWest:(CLLocationCoordinate2D)southWest northEeast:(CLLocationCoordinate2D)northEast;
+- (void)setProjectedConstraintsSouthWest:(RMProjectedPoint)southWest northEast:(RMProjectedPoint)northEast;
+
+#pragma mark -
+#pragma mark Annotations
+
+- (NSArray *)annotations;
+
+- (void)addAnnotation:(RMAnnotation *)annotation;
+- (void)addAnnotations:(NSArray *)annotations;
+
+- (void)removeAnnotation:(RMAnnotation *)annotation;
+- (void)removeAnnotations:(NSArray *)annotations;
+- (void)removeAllAnnotations;
+
+- (CGPoint)screenCoordinatesForAnnotation:(RMAnnotation *)annotation;
+
+#pragma mark -
+#pragma mark Cache
+
+///  Clear all images from the #tileSource's caching system.
+-(void)removeAllCachedImages;
+
+#pragma mark -
+#pragma mark Snapshots
+
+- (UIImage *)takeSnapshot;
+- (UIImage *)takeSnapshotAndIncludeOverlay:(BOOL)includeOverlay;
 
 @end

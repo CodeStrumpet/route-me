@@ -28,26 +28,20 @@
 #import <UIKit/UIKit.h>
 #import "RMTileCache.h"
 
-@class RMTileCacheDAO;
-
-@interface RMDatabaseCache : NSObject<RMTileCache> {
-	NSString* databasePath;
-	RMTileCacheDAO *dao;
-	RMCachePurgeStrategy purgeStrategy;
-	NSUInteger capacity;
-	NSUInteger minimalPurge;
+@interface RMDatabaseCache : NSObject <RMTileCache>
+{
+	NSString *databasePath;
 }
 
-@property (retain) NSString* databasePath;
+@property (nonatomic, retain) NSString *databasePath;
 
-+ (NSString*)dbPathForTileSource: (id<RMTileSource>) source usingCacheDir: (BOOL) useCacheDir;
--(id) initWithDatabase: (NSString*)path;
--(id) initWithTileSource: (id<RMTileSource>) source usingCacheDir: (BOOL) useCacheDir;
++ (NSString *)dbPathUsingCacheDir:(BOOL)useCacheDir;
 
--(void) setPurgeStrategy: (RMCachePurgeStrategy) theStrategy;
--(void) setCapacity: (NSUInteger) theCapacity;
--(void) setMinimalPurge: (NSUInteger) thePurgeMinimum;
+- (id)initWithDatabase:(NSString *)path;
+- (id)initUsingCacheDir:(BOOL)useCacheDir;
 
--(void) purgeTilesFromBefore: (NSDate*) date;
+- (void)setPurgeStrategy:(RMCachePurgeStrategy)theStrategy;
+- (void)setCapacity:(NSUInteger)theCapacity;
+- (void)setMinimalPurge:(NSUInteger)thePurgeMinimum;
 
 @end

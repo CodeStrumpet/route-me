@@ -28,20 +28,26 @@
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
 
+#import "RMFoundation.h"
+
+@class RMAnnotation;
+
 @interface RMMapLayer : CAScrollLayer
 {
+    RMAnnotation *annotation;
+
+    /// expressed in projected meters. The anchorPoint of the image/path/etc. is plotted here.
+    RMProjectedPoint projectedLocation;
+
+    BOOL enableDragging;
+
+    /// provided for storage of arbitrary user data
+    id userInfo;
 }
 
-- (void)moveBy: (CGSize) delta;
-- (void)zoomByFactor: (float) zoomFactor near:(CGPoint) center;
-
-@end
-
-#import "RMFoundation.h"
-@protocol RMMovingMapLayer
-
-@property (assign, nonatomic) RMProjectedPoint projectedLocation;
-@property (assign) BOOL enableDragging;
-@property (assign) BOOL enableRotation;
+@property (nonatomic, assign) RMAnnotation *annotation;
+@property (nonatomic, assign) RMProjectedPoint projectedLocation;
+@property (nonatomic, assign) BOOL enableDragging;
+@property (nonatomic, retain) id userInfo;
 
 @end

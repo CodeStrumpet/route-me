@@ -28,88 +28,88 @@
 #import <UIKit/UIKit.h>
 
 #import "RMFoundation.h"
-#import "RMLatLong.h"
 #import "RMMapLayer.h"
 
-@class RMMapContents;
 @class RMMapView;
 
-/*! \brief buggy, incomplete, untested; overlays paths/polygons on map
- */
-@interface RMPath : RMMapLayer <RMMovingMapLayer>
+@interface RMPath : RMMapLayer
 {
-	BOOL	isFirstPoint;
+    BOOL isFirstPoint;
 
-	/// This is the first point.
-	RMProjectedPoint projectedLocation;
-	
-	/// The color of the line, or the outline if a polygon
-	UIColor *lineColor;
-	/// The color of polygon's fill.
-	UIColor *fillColor;
-	
-	CGMutablePathRef path;
+    /// The color of the line, or the outline if a polygon
+    UIColor *lineColor;
+    /// The color of polygon's fill.
+    UIColor *fillColor;
 
-	/// Width of the line, units unknown; pixels maybe?
-	float lineWidth;
-	
-	/*! Drawing mode of the path; Choices are
-	 kCGPathFill,
-	 kCGPathEOFill,
-	 kCGPathStroke,
-	 kCGPathFillStroke,
-	 kCGPathEOFillStroke */
-	CGPathDrawingMode drawingMode;
-	
-	//Line cap and join styles
-	CGLineCap lineCap;
-	CGLineJoin lineJoin;
-    //Line dash style
-	CGFloat *_lineDashLengths;
+    CGMutablePathRef path;
+    CGRect pathBoundingBox;
+    BOOL ignorePathUpdates;
+    CGRect previousBounds;
+
+    /// Width of the line, in pixels
+    float lineWidth;
+
+    /*! Drawing mode of the path; Choices are
+     kCGPathFill,
+     kCGPathEOFill,
+     kCGPathStroke,
+     kCGPathFillStroke,
+     kCGPathEOFillStroke */
+    CGPathDrawingMode drawingMode;
+
+    //Line cap and join styles
+    CGLineCap lineCap;
+    CGLineJoin lineJoin;
+
+    // Line dash style
+    CGFloat *_lineDashLengths;
     CGFloat *_scaledLineDashLengths;
     size_t _lineDashCount;
     CGFloat lineDashPhase;
-    
-	BOOL scaleLineWidth;
-    /*! if YES line dashes will be scaled to keep a constant size if the layer is zoomed
-     */
-    BOOL scaleLineDash;
-	BOOL enableDragging;
-	BOOL enableRotation;
-	
-	float renderedScale;
-	RMMapContents *mapContents;
+
+    // Line shadow
+    CGFloat shadowBlur;
+    CGSize shadowOffset;
+    BOOL enableShadow;
+
+    BOOL scaleLineWidth;
+    BOOL scaleLineDash; // if YES line dashes will be scaled to keep a constant size if the layer is zoomed
+
+    float renderedScale;
+    RMMapView *mapView;
 }
 
+- (id)initWithView:(RMMapView *)aMapView;
 
-- (id) initWithContents: (RMMapContents*)aContents;
-- (id) initForMap: (RMMapView*)map;
+@property (nonatomic, assign) CGPathDrawingMode drawingMode;
+@property (nonatomic, assign) CGLineCap lineCap;
+@property (nonatomic, assign) CGLineJoin lineJoin;
+@property (nonatomic, assign) NSArray *lineDashLengths;
+@property (nonatomic, assign) CGFloat lineDashPhase;
+@property (nonatomic, assign) BOOL scaleLineDash;
+@property (nonatomic, assign) float lineWidth;
+@property (nonatomic, assign) BOOL	scaleLineWidth;
+@property (nonatomic, assign) CGFloat shadowBlur;
+@property (nonatomic, assign) CGSize shadowOffset;
+@property (nonatomic, assign) BOOL enableShadow;
+@property (nonatomic, retain) UIColor *lineColor;
+@property (nonatomic, retain) UIColor *fillColor;
+@property (nonatomic, readonly) CGRect pathBoundingBox;
 
-@property CGPathDrawingMode drawingMode;
-@property CGLineCap lineCap;
-@property CGLineJoin lineJoin;
-@property (nonatomic, readwrite, assign) NSArray *lineDashLengths;
-@property CGFloat lineDashPhase;
-@property BOOL scaleLineDash;
-@property float lineWidth;
-@property BOOL	scaleLineWidth;
-@property (nonatomic, assign) RMProjectedPoint projectedLocation;
-@property (assign) BOOL enableDragging;
-@property (assign) BOOL enableRotation;
-@property (readwrite, assign) UIColor *lineColor;
-@property (readwrite, assign) UIColor *fillColor;
+- (void)moveToProjectedPoint:(RMProjectedPoint)projectedPoint;
+- (void)moveToScreenPoint:(CGPoint)point;
+- (void)moveToCoordinate:(CLLocationCoordinate2D)coordinate;
 
-- (void) moveToXY: (RMProjectedPoint) point;
-- (void) moveToScreenPoint: (CGPoint) point;
-- (void) moveToLatLong: (RMLatLong) point;
-- (void) addLineToXY: (RMProjectedPoint) point;
-- (void) addLineToScreenPoint: (CGPoint) point;
-- (void) addLineToLatLong: (RMLatLong) point;
+- (void)addLineToProjectedPoint:(RMProjectedPoint)projectedPoint;
+- (void)addLineToScreenPoint:(CGPoint)point;
+- (void)addLineToCoordinate:(CLLocationCoordinate2D)coordinate;
+
+// Change the path without recalculating the geometry (performance!)
+- (void)performBatchOperations:(void (^)(RMPath *aPath))block;
 
 /// This closes the path, connecting the last point to the first.
 /// After this action, no further points can be added to the path.
 /// There is no requirement that a path be closed.
-- (void) closePath;
-
+- (void)closePath;
 
 @end

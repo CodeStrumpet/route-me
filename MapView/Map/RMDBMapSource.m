@@ -70,9 +70,12 @@
 
 #import "RMDBMapSource.h"
 #import "RMTileImage.h"
+#import "RMTileCache.h"
 #import "RMFractalTileProjection.h"
+#import "FMDatabase.h"
+#import "FMDatabaseQueue.h"
 
-#define kDefaultLatLonBoundingBox ((RMSphericalTrapezium){.northeast = {.latitude = 90, .longitude = 180}, .southwest = {.latitude = -90, .longitude = -180}})
+#pragma mark --- begin constants ----
 
 // mandatory preference keys
 #define kMinZoomKey @"map.minZoom"
@@ -93,20 +96,28 @@
 #define kShortAttributionKey @"map.shortAttribution"
 #define kLongAttributionKey @"map.longAttribution"
 
+#pragma mark --- end constants ----
 
-@interface RMDBMapSource(PrivateMethods)
-- (NSString*)getPreferenceAsString:(NSString*)name;
-- (float)getPreferenceAsFloat:(NSString*)name;
-- (int)getPreferenceAsInt:(NSString*)name;
+@interface RMDBMapSource (Preferences)
+{
+    FMDatabaseQueue *queue;
+    
+    // coverage area
+	CLLocationCoordinate2D topLeft;
+	CLLocationCoordinate2D bottomRight;
+	CLLocationCoordinate2D center;
+}
+- (NSString *)getPreferenceAsString:(NSString *)name;
+- (float)getPreferenceAsFloat:(NSString *)name;
+- (int)getPreferenceAsInt:(NSString *)name;
+
 @end
 
+#pragma mark -
 
 @implementation RMDBMapSource
 @synthesize db;
-
--(id)initWithPath:(NSString*)path {
-    return [self initWithPath:path pathIsInBundle:YES];
-}
+@synthesize uniqueTilecacheKey;
 
 -(id)initWithPath:(NSString *)path pathIsInBundle:(BOOL)pathIsInBundle {
 	self = [super init];
@@ -161,128 +172,191 @@
 	return self;
 }
 
+- (id)initWithPath:(NSString *)path
+{
+	if (!(self = [super init]))
+        return nil;
 
+    uniqueTilecacheKey = [[[path lastPathComponent] stringByDeletingPathExtension] retain];
 
--(void) dealloc {
-	[db release];
-	[tileProjection release];
+    queue = [[FMDatabaseQueue databaseQueueWithPath:path] retain];
+
+    if (!queue)
+    {
+        RMLog(@"Error opening db map source %@", path);
+        return nil;
+    }
+
+    [queue inDatabase:^(FMDatabase *db) {
+        [db setShouldCacheStatements:YES];
+    }];
+
+    RMLog(@"Opening db map source %@", path);
+
+    // Debug mode
+// [db setTraceExecution:YES];
+
+    // get the tile side length
+    tileSideLength = [self getPreferenceAsInt:kTileSideLengthKey];
+
+    // get the supported zoom levels
+    minZoom = [self getPreferenceAsFloat:kMinZoomKey];
+    maxZoom = [self getPreferenceAsFloat:kMaxZoomKey];
+
+    // get the coverage area
+    topLeft.latitude = [self getPreferenceAsFloat:kCoverageTopLeftLatitudeKey];
+    topLeft.longitude = [self getPreferenceAsFloat:kCoverageTopLeftLongitudeKey];
+    bottomRight.latitude = [self getPreferenceAsFloat:kCoverageBottomRightLatitudeKey];
+    bottomRight.longitude = [self getPreferenceAsFloat:kCoverageBottomRightLongitudeKey];
+    center.latitude = [self getPreferenceAsFloat:kCoverageCenterLatitudeKey];
+    center.longitude = [self getPreferenceAsFloat:kCoverageCenterLongitudeKey];
+
+    RMLog(@"Tile size: %d pixel", tileSideLength);
+    RMLog(@"Supported zoom range: %.0f - %.0f", minZoom, maxZoom);
+    RMLog(@"Coverage area: (%2.6f,%2.6f) x (%2.6f,%2.6f)",
+          topLeft.latitude,
+          topLeft.longitude,
+          bottomRight.latitude,
+          bottomRight.longitude);
+    RMLog(@"Center: (%2.6f,%2.6f)",
+          center.latitude,
+          center.longitude);
+
+    // init the tile projection
+    tileProjection = [[RMFractalTileProjection alloc] initFromProjection:[self projection]
+                                                          tileSideLength:tileSideLength
+                                                                 maxZoom:maxZoom
+                                                                 minZoom:minZoom];
+
+	return self;
+}
+
+- (void)dealloc
+{
+    [db release];
+    [uniqueTilecacheKey release]; uniqueTilecacheKey = nil;
+    [queue release]; queue = nil;
 	[super dealloc];
 }
 
--(int)tileSideLength {
-	return tileSideLength;
-}
-
-- (CLLocationCoordinate2D) topLeftOfCoverage {
+- (CLLocationCoordinate2D)topLeftOfCoverage
+{
 	return topLeft;
 }
 
-- (CLLocationCoordinate2D) bottomRightOfCoverage {
+- (CLLocationCoordinate2D)bottomRightOfCoverage
+{
 	return bottomRight;
 }
 
-- (CLLocationCoordinate2D) centerOfCoverage {
+- (CLLocationCoordinate2D)centerOfCoverage
+{
 	return center;
 }
 
 #pragma mark RMTileSource methods
 
--(float) minZoom {
-	return minZoom;
-}
-
--(float) maxZoom {
-	return maxZoom;
-}
-
--(void) setMinZoom:(NSUInteger)aMinZoom
+- (UIImage *)imageForTile:(RMTile)tile inCache:(RMTileCache *)tileCache
 {
-	[tileProjection setMinZoom:aMinZoom];
+    __block UIImage *image = nil;
+
+	tile = [[self mercatorToTileProjection] normaliseTile:tile];
+    image = [tileCache cachedImage:tile withCacheKey:[self uniqueTilecacheKey]];
+
+    if (image)
+        return image;
+
+    // get the unique key for the tile
+    NSNumber *key = [NSNumber numberWithLongLong:RMTileKey(tile)];
+
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        // fetch the image from the db
+        FMResultSet *result = [db executeQuery:@"SELECT image FROM tiles WHERE tilekey = ?", key];
+        if ([db hadError])
+            NSLog(@"DB error %d on line %d: %@", [db lastErrorCode], __LINE__, [db lastErrorMessage]);
+
+        if ([result next])
+            image = [[[UIImage alloc] initWithData:[result dataForColumnIndex:0]] autorelease];
+        else
+            image = [RMTileImage missingTile];
+
+        [result close];
+    }];
+
+    if (image)
+        [tileCache addImage:image forTile:tile withCacheKey:[self uniqueTilecacheKey]];
+
+	return image;
 }
 
--(void) setMaxZoom:(NSUInteger)aMaxZoom
+- (RMSphericalTrapezium)latitudeLongitudeBoundingBox
 {
-	[tileProjection setMaxZoom:aMaxZoom];
+    CLLocationCoordinate2D southWest, northEast;
+    southWest.latitude = bottomRight.latitude;
+    southWest.longitude = topLeft.longitude;
+    northEast.latitude = topLeft.latitude;
+    northEast.longitude = bottomRight.longitude;
+
+    RMSphericalTrapezium bbox;
+    bbox.southWest = southWest;
+    bbox.northEast = northEast;
+
+    return bbox;
 }
 
--(RMSphericalTrapezium) latitudeLongitudeBoundingBox;
+- (NSString *)uniqueTilecacheKey
 {
-	return kDefaultLatLonBoundingBox;
+    return uniqueTilecacheKey;
 }
 
--(NSString*) tileURL: (RMTile) tile {
-	return nil;
-}
-
--(NSString*) tileFile: (RMTile) tile {
-	return nil;
-}
-
--(NSString*) tilePath {
-	return nil;
-}
-
--(RMTileImage *)tileImage:(RMTile)tile {
-	tile = [tileProjection normaliseTile:tile];
-	return [RMTileImage imageForTile:tile fromDB:db];
-}
-
--(id<RMMercatorToTileProjection>) mercatorToTileProjection {
-	return [[tileProjection retain] autorelease];
-}
-
--(RMProjection*) projection {
-	return [RMProjection googleProjection];
-}
-
--(void) didReceiveMemoryWarning {
-	LogMethod();		
-}
-
--(NSString*) uniqueTilecacheKey {
-	return nil;
-}
-
--(NSString *)shortName {
+- (NSString *)shortName
+{
 	return [self getPreferenceAsString:kShortNameKey];
 }
 
--(NSString *)longDescription {
+- (NSString *)longDescription
+{
 	return [self getPreferenceAsString:kLongDescriptionKey];
 }
 
--(NSString *)shortAttribution {
+- (NSString *)shortAttribution
+{
 	return [self getPreferenceAsString:kShortAttributionKey];
 }
 
--(NSString *)longAttribution {
+- (NSString *)longAttribution
+{
 	return [self getPreferenceAsString:kLongAttributionKey];
-}
-
--(void)removeAllCachedImages {
-	// no-op
 }
 
 #pragma mark preference methods
 
--(NSString*)getPreferenceAsString:(NSString*)name {
-	NSString* value = nil;
-	
-	FMResultSet* rs = [db executeQuery:@"select value from preferences where name = ?", name];
-	if ([rs next]) {
-		value = [rs stringForColumn:@"value"];
-	}
-	[rs close];
-	
+- (NSString *)getPreferenceAsString:(NSString*)name
+{
+	__block NSString* value = nil;
+
+    [queue inDatabase:^(FMDatabase *db)
+     {
+        FMResultSet *result = [db executeQuery:@"select value from preferences where name = ?", name];
+
+        if ([result next])
+            value = [result stringForColumn:@"value"];
+
+        [result close];
+     }];
+
 	return value;
 }
 
--(float)getPreferenceAsFloat:(NSString*)name {
-	NSString* value = [self getPreferenceAsString:name];
+- (float)getPreferenceAsFloat:(NSString *)name
+{
+	NSString *value = [self getPreferenceAsString:name];
 	return (value == nil) ? INT_MIN : [value floatValue];
 }
 
--(int)getPreferenceAsInt:(NSString*)name {
+- (int)getPreferenceAsInt:(NSString *)name
+{
 	NSString* value = [self getPreferenceAsString:name];
 	return (value == nil) ? INT_MIN : [value intValue];
 }

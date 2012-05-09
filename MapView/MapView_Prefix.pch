@@ -2,10 +2,13 @@
 // Prefix header for all source files of the 'MapView' target in the 'MapView' project
 //
 
-#ifdef __OBJC__
+#if __OBJC__
     #import <Foundation/Foundation.h>
     #import <UIKit/UIKit.h>
+    #import <CoreLocation/CoreLocation.h>
+    #import <QuartzCore/QuartzCore.h>
 
+    #import "RMGlobalConstants.h"
 #endif
 
 #if DEBUG

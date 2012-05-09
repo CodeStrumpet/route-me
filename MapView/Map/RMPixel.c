@@ -31,7 +31,7 @@ CGPoint RMScaleCGPointAboutPoint(CGPoint point, float factor, CGPoint pivot)
 {
 	point.x = (point.x - pivot.x) * factor + pivot.x;
 	point.y = (point.y - pivot.y) * factor + pivot.y;
-	
+
 	return point;
 }
 
@@ -48,11 +48,13 @@ CGPoint RMTranslateCGPointBy(CGPoint point, CGSize delta)
 {
 	point.x += delta.width;
 	point.y += delta.height;
+
 	return point;
 }
 
 CGRect RMTranslateCGRectBy(CGRect rect, CGSize delta)
 {
 	rect.origin = RMTranslateCGPointBy(rect.origin, delta);
+
 	return rect;
 }

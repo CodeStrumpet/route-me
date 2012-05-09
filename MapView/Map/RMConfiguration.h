@@ -27,18 +27,12 @@
 
 #import <UIKit/UIKit.h>
 
+@interface RMConfiguration : NSObject
 
-@interface RMConfiguration : NSObject {
++ (RMConfiguration *)configuration;
 
-	id propList;
-	
-}
+- (RMConfiguration *)initWithPath:(NSString *)path;
 
-+ (RMConfiguration*) configuration;
-
-- (RMConfiguration*) initWithPath: (NSString*) path;
-- (void) dealloc;
-
-- (NSDictionary*) cacheConfiguration;
+- (NSDictionary *)cacheConfiguration;
 
 @end

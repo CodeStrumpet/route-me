@@ -36,9 +36,9 @@
 #import "RMTileImage.h"
 #import "RMProjection.h"
 #import "RMFractalTileProjection.h"
-#import "FMDatabase.h"
 
-#pragma mark -
+#import "FMDatabase.h"
+#import "FMDatabaseQueue.h"
 
 @implementation RMMBTilesTileSource
 
@@ -46,27 +46,33 @@
 {
 	if ( ! [super init])
 		return nil;
-	
+
 	tileProjection = [[RMFractalTileProjection alloc] initFromProjection:[self projection] 
                                                           tileSideLength:kMBTilesDefaultTileSize 
                                                                  maxZoom:kMBTilesDefaultMaxTileZoom 
                                                                  minZoom:kMBTilesDefaultMinTileZoom];
-	
-    db = [[FMDatabase databaseWithPath:[tileSetURL relativePath]] retain];
-    
-    if ( ! [db open])
+
+    queue = [[FMDatabaseQueue databaseQueueWithPath:[tileSetURL relativePath]] retain];
+
+    if ( ! queue)
         return nil;
-    
+
+    [queue inDatabase:^(FMDatabase *db) {
+        [db setShouldCacheStatements:YES];
+    }];
+
 	return self;
+}
+
+- (void)cancelAllDownloads
+{
+    // no-op
 }
 
 - (void)dealloc
 {
-	[tileProjection release];
-    
-    [db close];
-    [db release];
-    
+	[tileProjection release]; tileProjection = nil;
+    [queue release]; queue = nil;
 	[super dealloc];
 }
 
@@ -80,7 +86,7 @@
 	[tileProjection setTileSideLength:aTileSideLength];
 }
 
-- (RMTileImage *)tileImage:(RMTile)tile
+- (UIImage *)imageForTile:(RMTile)tile inCache:(RMTileCache *)tileCache
 {
     NSAssert4(((tile.zoom >= self.minZoom) && (tile.zoom <= self.maxZoom)),
 			  @"%@ tried to retrieve tile with zoomLevel %d, outside source's defined range %f to %f", 
@@ -90,28 +96,40 @@
     NSInteger x    = tile.x;
     NSInteger y    = pow(2, zoom) - tile.y - 1;
 
-    FMResultSet *results = [db executeQuery:@"select tile_data from tiles where zoom_level = ? and tile_column = ? and tile_row = ?", 
-                               [NSNumber numberWithFloat:zoom], 
-                               [NSNumber numberWithFloat:x], 
-                               [NSNumber numberWithFloat:y]];
+    dispatch_async(dispatch_get_main_queue(), ^(void)
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:RMTileRequested object:[NSNumber numberWithUnsignedLongLong:RMTileKey(tile)]];
+    });
     
-    if ([db hadError])
-        return [RMTileImage dummyTile:tile];
-    
-    [results next];
-    
-    NSData *data = [results dataForColumn:@"tile_data"];
+    __block UIImage *image;
 
-    RMTileImage *image;
-    
-    if ( ! data)
-        image = [RMTileImage dummyTile:tile];
-    
-    else
-        image = [RMTileImage imageForTile:tile withData:data];
-    
-    [results close];
-    
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        FMResultSet *results = [db executeQuery:@"select tile_data from tiles where zoom_level = ? and tile_column = ? and tile_row = ?", 
+                                   [NSNumber numberWithShort:zoom], 
+                                   [NSNumber numberWithUnsignedInt:x], 
+                                   [NSNumber numberWithUnsignedInt:y]];
+
+        if ([db hadError])
+            image = [RMTileImage errorTile];
+
+        [results next];
+
+        NSData *data = [results dataForColumn:@"tile_data"];
+
+        if ( ! data)
+            image = [RMTileImage errorTile];
+        else
+            image = [UIImage imageWithData:data];
+
+        [results close];
+    }];
+
+    dispatch_async(dispatch_get_main_queue(), ^(void)
+    {
+        [[NSNotificationCenter defaultCenter] postNotificationName:RMTileRetrieved object:[NSNumber numberWithUnsignedLongLong:RMTileKey(tile)]];
+    });
+
     return image;
 }
 
@@ -130,7 +148,7 @@
     return nil;
 }
 
-- (id <RMMercatorToTileProjection>)mercatorToTileProjection
+- (RMFractalTileProjection *)mercatorToTileProjection
 {
 	return [[tileProjection retain] autorelease];
 }
@@ -142,34 +160,44 @@
 
 - (float)minZoom
 {
-    FMResultSet *results = [db executeQuery:@"select min(zoom_level) from tiles"];
-    
-    if ([db hadError])
-        return kMBTilesDefaultMinTileZoom;
-    
-    [results next];
-    
-    double minZoom = [results doubleForColumnIndex:0];
-    
-    [results close];
-    
-    return (float)minZoom;
+    __block double minZoom;
+
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        FMResultSet *results = [db executeQuery:@"select min(zoom_level) from tiles"];
+
+        if ([db hadError])
+            minZoom = kMBTilesDefaultMinTileZoom;
+
+        [results next];
+
+        minZoom = [results doubleForColumnIndex:0];
+
+        [results close];
+    }];
+
+    return minZoom;
 }
 
 - (float)maxZoom
 {
-    FMResultSet *results = [db executeQuery:@"select max(zoom_level) from tiles"];
-    
-    if ([db hadError])
-        return kMBTilesDefaultMaxTileZoom;
+    __block double maxZoom;
 
-    [results next];
-    
-    double maxZoom = [results doubleForColumnIndex:0];
-    
-    [results close];
-    
-    return (float)maxZoom;
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        FMResultSet *results = [db executeQuery:@"select max(zoom_level) from tiles"];
+
+        if ([db hadError])
+            maxZoom = kMBTilesDefaultMaxTileZoom;
+
+        [results next];
+
+        maxZoom = [results doubleForColumnIndex:0];
+
+        [results close];
+    }];
+
+    return maxZoom;
 }
 
 - (void)setMinZoom:(NSUInteger)aMinZoom
@@ -184,7 +212,66 @@
 
 - (RMSphericalTrapezium)latitudeLongitudeBoundingBox
 {
-    return kMBTilesDefaultLatLonBoundingBox;
+    __block RMSphericalTrapezium bounds = kMBTilesDefaultLatLonBoundingBox;
+
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        FMResultSet *results = [db executeQuery:@"select value from metadata where name = 'bounds'"];
+
+        [results next];
+
+        NSString *boundsString = [results stringForColumnIndex:0];
+
+        [results close];
+
+        if (boundsString)
+        {
+            NSArray *parts = [boundsString componentsSeparatedByString:@","];
+
+            if ([parts count] == 4)
+            {
+                bounds.southWest.longitude = [[parts objectAtIndex:0] doubleValue];
+                bounds.southWest.latitude  = [[parts objectAtIndex:1] doubleValue];
+                bounds.northEast.longitude = [[parts objectAtIndex:2] doubleValue];
+                bounds.northEast.latitude  = [[parts objectAtIndex:3] doubleValue];
+            }
+        }
+    }];
+
+    return bounds;
+}
+
+- (BOOL)coversFullWorld
+{
+    RMSphericalTrapezium ownBounds     = [self latitudeLongitudeBoundingBox];
+    RMSphericalTrapezium defaultBounds = kMBTilesDefaultLatLonBoundingBox;
+
+    if (ownBounds.southWest.longitude <= defaultBounds.southWest.longitude + 10 && 
+        ownBounds.northEast.longitude >= defaultBounds.northEast.longitude - 10)
+        return YES;
+
+    return NO;
+}
+
+- (NSString *)legend
+{
+    __block NSString *legend;
+
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        FMResultSet *results = [db executeQuery:@"select value from metadata where name = 'legend'"];
+
+        if ([db hadError])
+            legend = nil;
+
+        [results next];
+
+        legend = [results stringForColumn:@"value"];
+
+        [results close];
+    }];
+
+    return legend;
 }
 
 - (void)didReceiveMemoryWarning
@@ -194,54 +281,69 @@
 
 - (NSString *)uniqueTilecacheKey
 {
-    return [NSString stringWithFormat:@"MBTiles%@", [[db databasePath] lastPathComponent]];
+    return [NSString stringWithFormat:@"MBTiles%@", [queue.path lastPathComponent]];
 }
 
 - (NSString *)shortName
 {
-    FMResultSet *results = [db executeQuery:@"select value from metadata where name = 'name'"];
-    
-    if ([db hadError])
-        return @"Unknown MBTiles";
-    
-    [results next];
-    
-    NSString *shortName = [results stringForColumnIndex:0];
-    
-    [results close];
-    
+    __block NSString *shortName;
+
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        FMResultSet *results = [db executeQuery:@"select value from metadata where name = 'name'"];
+
+        if ([db hadError])
+            shortName = nil;
+
+        [results next];
+
+        shortName = [results stringForColumnIndex:0];
+
+        [results close];
+    }];
+
     return shortName;
 }
 
 - (NSString *)longDescription
 {
-    FMResultSet *results = [db executeQuery:@"select value from metadata where name = 'description'"];
-    
-    if ([db hadError])
-        return @"Unknown MBTiles description";
-    
-    [results next];
-    
-    NSString *description = [results stringForColumnIndex:0];
-    
-    [results close];
-    
+    __block NSString *description;
+
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        FMResultSet *results = [db executeQuery:@"select value from metadata where name = 'description'"];
+
+        if ([db hadError])
+            description = nil;
+
+        [results next];
+
+        description = [results stringForColumnIndex:0];
+
+        [results close];
+    }];
+
     return [NSString stringWithFormat:@"%@ - %@", [self shortName], description];
 }
 
 - (NSString *)shortAttribution
 {
-    FMResultSet *results = [db executeQuery:@"select value from metadata where name = 'attribution'"];
-    
-    if ([db hadError])
-        return @"Unknown MBTiles attribution";
-    
-    [results next];
-    
-    NSString *attribution = [results stringForColumnIndex:0];
-    
-    [results close];
-    
+    __block NSString *attribution;
+
+    [queue inDatabase:^(FMDatabase *db)
+    {
+        FMResultSet *results = [db executeQuery:@"select value from metadata where name = 'attribution'"];
+
+        if ([db hadError])
+            attribution = @"Unknown MBTiles attribution";
+
+        [results next];
+
+        attribution = [results stringForColumnIndex:0];
+
+        [results close];
+    }];
+
     return attribution;
 }
 

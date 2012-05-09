@@ -25,41 +25,46 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#import <UIKit/UIKit.h>
-
 @class RMMapView;
+@class RMMapLayer;
 @class RMMarker;
+@class RMAnnotation;
 
 /// Use this for notifications of map panning, zooming, and taps on the RMMapView.
 @protocol RMMapViewDelegate <NSObject>
-
 @optional
 
-- (void) beforeMapMove: (RMMapView*) map;
-- (void) afterMapMove: (RMMapView*) map ;
+- (RMMapLayer *)mapView:(RMMapView *)mapView layerForAnnotation:(RMAnnotation *)annotation;
+- (void)mapView:(RMMapView *)mapView willHideLayerForAnnotation:(RMAnnotation *)annotation;
+- (void)mapView:(RMMapView *)mapView didHideLayerForAnnotation:(RMAnnotation *)annotation;
 
-- (void) beforeMapZoom: (RMMapView*) map byFactor: (float) zoomFactor near:(CGPoint) center;
-- (void) afterMapZoom: (RMMapView*) map byFactor: (float) zoomFactor near:(CGPoint) center;
+- (void)beforeMapMove:(RMMapView *)map;
+- (void)afterMapMove:(RMMapView *)map;
+
+- (void)beforeMapZoom:(RMMapView *)map;
+- (void)afterMapZoom:(RMMapView *)map;
 
 /*
  \brief Tells the delegate that the region displayed by the map view just changed.
- \details This method is called whenever the currently displayed map region changes. 
- During scrolling and zooming, this method may be called many times to report updates to the map position. 
+ \details This method is called whenever the currently displayed map region changes.
+ During scrolling and zooming, this method may be called many times to report updates to the map position.
  Therefore, your implementation of this method should be as lightweight as possible to avoid affecting scrolling and zooming performance.
  */
 - (void)mapViewRegionDidChange:(RMMapView *)mapView;
 
-- (void) beforeMapRotate: (RMMapView*) map fromAngle: (CGFloat) angle;
-- (void) afterMapRotate: (RMMapView*) map toAngle: (CGFloat) angle;
+- (void)doubleTapOnMap:(RMMapView *)map at:(CGPoint)point;
+- (void)doubleTapTwoFingersOnMap:(RMMapView *)map at:(CGPoint)point;
+- (void)singleTapOnMap:(RMMapView *)map at:(CGPoint)point;
+- (void)singleTapTwoFingersOnMap:(RMMapView *)map at:(CGPoint)point;
+- (void)longSingleTapOnMap:(RMMapView *)map at:(CGPoint)point;
 
-- (void) doubleTapOnMap: (RMMapView*) map At: (CGPoint) point;
-- (void) singleTapOnMap: (RMMapView*) map At: (CGPoint) point;
+- (void)tapOnAnnotation:(RMAnnotation *)annotation onMap:(RMMapView *)map;
+- (void)doubleTapOnAnnotation:(RMAnnotation *)annotation onMap:(RMMapView *)map;
+- (void)tapOnLabelForAnnotation:(RMAnnotation *)annotation onMap:(RMMapView *)map;
+- (void)doubleTapOnLabelForAnnotation:(RMAnnotation *)annotation onMap:(RMMapView *)map;
 
-- (void) tapOnMarker: (RMMarker*) marker onMap: (RMMapView*) map;
-- (void) tapOnLabelForMarker: (RMMarker*) marker onMap: (RMMapView*) map;
-- (BOOL) mapView:(RMMapView *)map shouldDragMarker:(RMMarker *)marker withEvent:(UIEvent *)event;
-- (void) mapView:(RMMapView *)map didDragMarker:(RMMarker *)marker withEvent:(UIEvent *)event;
-
-- (void) afterMapTouch: (RMMapView*) map;
+- (BOOL)mapView:(RMMapView *)map shouldDragAnnotation:(RMAnnotation *)annotation;
+- (void)mapView:(RMMapView *)map didDragAnnotation:(RMAnnotation *)annotation withDelta:(CGPoint)delta;
+- (void)mapView:(RMMapView *)map didEndDragAnnotation:(RMAnnotation *)annotation;
 
 @end

@@ -26,47 +26,44 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
-#import "RMTile.h"
-#import "RMLatLong.h"
-#import "RMFoundation.h"
 
-@class RMTileImage;
-@class RMFractalTileProjection;
-@class RMTileLoader;
-@class RMTiledLayerController;
-@class RMTileCache;
+#import "RMTile.h"
+#import "RMFoundation.h"
+#import "RMGlobalConstants.h"
+
+#define RMTileRequested @"RMTileRequested"
+#define RMTileRetrieved @"RMTileRetrieved"
+
+@class RMFractalTileProjection, RMTileCache, RMProjection, RMTileImage, RMTileCache;
+
 @protocol RMMercatorToTileProjection;
-@class RMProjection;
 
 @protocol RMTileSource <NSObject>
 
--(RMTileImage *) tileImage: (RMTile) tile;
--(NSString *) tileURL: (RMTile) tile;
--(NSString *) tileFile: (RMTile) tile;
--(NSString *) tilePath;
--(id<RMMercatorToTileProjection>) mercatorToTileProjection;
--(RMProjection*) projection;
+- (UIImage *)imageForTile:(RMTile)tile inCache:(RMTileCache *)tileCache;
+- (void)cancelAllDownloads;
 
--(float) minZoom;
--(float) maxZoom;
+- (RMFractalTileProjection *)mercatorToTileProjection;
+- (RMProjection *)projection;
 
--(void) setMinZoom:(NSUInteger) aMinZoom;
--(void) setMaxZoom:(NSUInteger) aMaxZoom;
+- (float)minZoom;
+- (void)setMinZoom:(NSUInteger)aMinZoom;
 
--(RMSphericalTrapezium) latitudeLongitudeBoundingBox;
+- (float)maxZoom;
+- (void)setMaxZoom:(NSUInteger)aMaxZoom;
 
--(void) didReceiveMemoryWarning;
+- (int)tileSideLength;
+- (void)setTileSideLength:(NSUInteger)aTileSideLength;
 
--(NSString *)uniqueTilecacheKey;
+- (RMSphericalTrapezium)latitudeLongitudeBoundingBox;
 
--(NSString *)shortName;
--(NSString *)longDescription;
--(NSString *)shortAttribution;
--(NSString *)longAttribution;
+- (NSString *)uniqueTilecacheKey;
 
-/*! \brief clear all images from the in-memory and on-disk image caches
- \bug This method belongs on RMCachedTileSource, not on RMTileSource, because an RMTileSource doesn't have a cache.
- */
--(void)removeAllCachedImages;
+- (NSString *)shortName;
+- (NSString *)longDescription;
+- (NSString *)shortAttribution;
+- (NSString *)longAttribution;
+
+- (void)didReceiveMemoryWarning;
 
 @end

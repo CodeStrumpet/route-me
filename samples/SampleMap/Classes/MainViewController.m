@@ -8,92 +8,92 @@
 
 #import "MainView.h"
 
-#import "RMCloudMadeMapSource.h"
+#import "RMOpenStreetMapSource.h"
 
 @implementation MainViewController
 
 @synthesize mapView;
 @synthesize infoTextView;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-        // Custom initialization
-    }
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    if (!(self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]))
+        return nil;
+
     return self;
 }
 
-
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    [mapView setDelegate:self];
-	id myTilesource = [[[RMCloudMadeMapSource alloc] initWithAccessKey:@"0199bdee456e59ce950b0156029d6934" styleNumber:999] autorelease];
-    
-	// have to initialize the RMMapContents object explicitly if we want it to use a particular tilesource
-	[[[RMMapContents alloc] initWithView:mapView 
-							  tilesource:myTilesource] autorelease];
-    
-    /* -- Uncomment to constrain view
-    [mapView setConstraintsSW:((CLLocationCoordinate2D){-33.942221,150.996094}) 
-                           NE:((CLLocationCoordinate2D){-33.771157,151.32019})]; */
-    
+
+//    [mapView setConstraintsSouthWest:CLLocationCoordinate2DMake(47.0, 10.0)
+//                          northEeast:CLLocationCoordinate2DMake(48.0, 11.0)];
+
+    mapView.centerCoordinate = CLLocationCoordinate2DMake(47.56, 10.22);
+//    mapView.adjustTilesForRetinaDisplay = YES;
+    mapView.delegate = self;
+
     [self updateInfo];
 }
 
-
 /*
- // Override to allow orientations other than the default portrait orientation.
- - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
- // Return YES for supported orientations
- return (interfaceOrientation == UIInterfaceOrientationPortrait);
- }
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    // Return YES for supported orientations
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
 */
 
-
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
 	RMLog(@"didReceiveMemoryWarning %@", self);
     [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
     // Release anything that's not essential, such as cached data
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [self updateInfo];
 }
 
-- (void)dealloc {
-	LogMethod();
+- (void)dealloc
+{
     self.infoTextView = nil; 
     self.mapView = nil; 
     [super dealloc];
 }
 
-- (void)updateInfo {
-	RMMapContents *contents = self.mapView.contents;
-    CLLocationCoordinate2D mapCenter = [contents mapCenter];
+- (void)updateInfo
+{
+    CLLocationCoordinate2D mapCenter = [self.mapView centerCoordinate];
     
-	double truescaleDenominator = [contents scaleDenominator];
-    double routemeMetersPerPixel = [contents metersPerPixel]; 
+	double truescaleDenominator = [self.mapView scaleDenominator];
+    double routemeMetersPerPixel = [self.mapView metersPerPixel]; 
     [infoTextView setText:[NSString stringWithFormat:@"Latitude : %f\nLongitude : %f\nZoom: %.2f Meter per pixel : %.1f\nTrue scale : 1:%.0f\n%@\n%@", 
                            mapCenter.latitude, 
                            mapCenter.longitude, 
-                           contents.zoom, 
+                           self.mapView.zoom, 
                            routemeMetersPerPixel,
                            truescaleDenominator,
-						   [[contents tileSource] shortName],
-						   [[contents tileSource] shortAttribution]
+						   [[self.mapView tileSource] shortName],
+						   [[self.mapView tileSource] shortAttribution]
 						   ]];
 }
 
 #pragma mark -
 #pragma mark Delegate methods
 
-- (void) afterMapMove: (RMMapView*) map {
+- (void)afterMapMove:(RMMapView *)map
+{
     [self updateInfo];
 }
 
-- (void) afterMapZoom: (RMMapView*) map byFactor: (float) zoomFactor near:(CGPoint) center {
+- (void)afterMapZoom:(RMMapView *)map
+{
     [self updateInfo];
 }
-
 
 @end
