@@ -227,6 +227,8 @@ typedef enum {
 - (void)addAnnotation:(RMAnnotation *)annotation;
 - (void)addAnnotations:(NSArray *)annotations;
 
+- (void)refreshLayerForAnnotation:(RMAnnotation *)annotation;
+
 - (void)removeAnnotation:(RMAnnotation *)annotation;
 - (void)removeAnnotations:(NSArray *)annotations;
 - (void)removeAllAnnotations;

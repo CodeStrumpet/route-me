@@ -40,6 +40,7 @@
 @synthesize title;
 @synthesize userInfo;
 @synthesize annotationType;
+@synthesize numericType;
 @synthesize annotationIcon, badgeIcon;
 @synthesize anchorPoint;
 
@@ -47,7 +48,7 @@
 @synthesize projectedLocation;
 @synthesize projectedBoundingBox;
 @synthesize hasBoundingBox;
-@synthesize enabled, clusteringEnabled;
+@synthesize enabled, clusteringEnabled, highlighted;
 @synthesize position;
 @synthesize quadTreeNode;
 
@@ -146,6 +147,18 @@
         [layer retain];
         layer.annotation = self;
         layer.position = self.position;
+    }
+}
+
+- (void)setHighlighted:(BOOL)newHighlightedState {
+    
+    if (highlighted != newHighlightedState) {
+        highlighted = newHighlightedState;
+        
+        // only call for a refresh if layer already exists
+        if (layer) {
+            [mapView refreshLayerForAnnotation:self];
+        }
     }
 }
 

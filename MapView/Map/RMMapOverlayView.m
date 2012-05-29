@@ -96,6 +96,18 @@
     [self.layer scrollPoint:CGPointMake(-delta.x, -delta.y)];
 }
 
+- (void)replaceSublayer:(CALayer *)oldLayer with:(CALayer *)newLayer {
+    [self.layer replaceSublayer:oldLayer with:newLayer];
+}
+
+- (BOOL)containsSublayer:(CALayer *)aLayer {
+    BOOL contains = NO;
+    if (aLayer) {
+        contains = [self.layer.sublayers containsObject:aLayer];
+    }
+    return contains;
+}
+
 #pragma mark -
 #pragma mark Event handling
 

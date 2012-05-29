@@ -1239,6 +1239,8 @@
             _locationAnnotation = [[RMAnnotation alloc] initWithMapView:self
                                                              coordinate:self.centerCoordinate
                                                                andTitle:@""];
+            _locationAnnotation.annotationType = kRMLocationAnnotationTypeName;
+            _locationAnnotation.numericType = kRMLocationAnnotationNumericType;
             RMLocationMarker* locationMarker = [[RMLocationMarker alloc] initWithView:self];
             
             [_locationAnnotation setLayer:locationMarker];
@@ -1832,6 +1834,51 @@
     }
 }
 
+- (void)refreshLayerForAnnotation:(RMAnnotation *)annotation
+{
+    @synchronized (annotations)
+    {
+        // simply add the annotation if MapView is not already tracking it
+        if (![annotations containsObject:annotation]) {
+            [self addAnnotation:annotation];
+            return;
+        }
+    }
+    
+    if (enableClustering)
+    {
+        annotation.layer = nil;
+        [self correctPositionOfAllAnnotations];
+    }
+    else
+    {
+        [self correctScreenPosition:annotation];
+        
+        if ([annotation isAnnotationOnScreen] && [overlayView containsSublayer:annotation.layer] && [delegate respondsToSelector:@selector(mapView:layerForAnnotation:)])
+        {
+            
+            RMMapLayer *newLayer = [delegate mapView:self layerForAnnotation:annotation];                        
+            
+            if (newLayer)
+            {
+                RMMapLayer *oldLayer = annotation.layer;
+                
+                //[CATransaction begin];
+                //[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+                
+                [overlayView replaceSublayer:oldLayer with:newLayer];                
+                
+                //[CATransaction commit];
+
+                annotation.layer = newLayer;                
+            }
+        } else {
+            // annotation is not on screen, force a refresh of its layer next time it is on the screen
+            annotation.layer = nil; 
+        }
+    }
+}
+
 - (void)addAnnotations:(NSArray *)newAnnotations
 {
     @synchronized (annotations)
@@ -1901,7 +1948,11 @@
 
 // User location is updated
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-    [self.locationAnnotation setCoordinate:newLocation.coordinate];
+    
+    // TODO update position when dragging is finished
+    if (!mapScrollView.dragging && !mapScrollView.decelerating) {
+        [self.locationAnnotation setCoordinate:newLocation.coordinate];        
+    }
 }
 
 @end

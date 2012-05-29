@@ -39,6 +39,9 @@
 - (void)insertSublayer:(CALayer *)aLayer below:(CALayer *)sublayer;
 - (void)insertSublayer:(CALayer *)aLayer above:(CALayer *)sublayer;
 
+- (void)replaceSublayer:(CALayer *)oldLayer with:(CALayer *)newLayer;
+- (BOOL)containsSublayer:(CALayer *)aLayer;
+
 - (void)moveLayersBy:(CGPoint)delta;
 
 @end

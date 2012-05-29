@@ -28,6 +28,9 @@
 
 #import "RMFoundation.h"
 
+#define kRMLocationAnnotationTypeName @"RMLocationAnnotation"
+#define kRMLocationAnnotationNumericType -1
+
 @class RMMapView, RMMapLayer, RMQuadTreeNode;
 
 @interface RMAnnotation : NSObject
@@ -39,7 +42,7 @@
     RMProjectedPoint projectedLocation;
     RMProjectedRect  projectedBoundingBox;
     BOOL hasBoundingBox;
-    BOOL enabled, clusteringEnabled;
+    BOOL enabled, clusteringEnabled, highlighted;
 
     RMMapLayer *layer;
     RMQuadTreeNode *quadTreeNode;
@@ -47,6 +50,7 @@
     // provided for storage of arbitrary user data
     id userInfo;
     NSString *annotationType;
+    int numericType;
     UIImage  *annotationIcon, *badgeIcon;
     CGPoint   anchorPoint;
 }
@@ -55,6 +59,7 @@
 @property (nonatomic, retain) NSString *title;
 @property (nonatomic, retain) id userInfo;
 @property (nonatomic, retain) NSString *annotationType;
+@property (nonatomic, assign) int numericType;
 @property (nonatomic, retain) UIImage *annotationIcon;
 @property (nonatomic, retain) UIImage *badgeIcon;
 @property (nonatomic, assign) CGPoint anchorPoint;
@@ -66,6 +71,7 @@
 @property (nonatomic, assign) BOOL hasBoundingBox;
 @property (nonatomic, assign) BOOL enabled;
 @property (nonatomic, assign) BOOL clusteringEnabled;
+@property (nonatomic, assign) BOOL highlighted;
 
 // RMMarker, RMPath, whatever you return in your delegate method mapView:layerForAnnotation:
 @property (nonatomic, retain) RMMapLayer *layer;
