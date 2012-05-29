@@ -58,12 +58,13 @@ typedef enum {
 @class RMMarker;
 @class RMAnnotation;
 @class RMQuadTree;
+@class RMLocationMarker;
 
 @protocol RMMercatorToTileProjection;
 @protocol RMTileSource;
 @protocol RMMapTiledLayerViewDelegate;
 
-@interface RMMapView : UIView <UIScrollViewDelegate, RMMapOverlayViewDelegate, RMMapTiledLayerViewDelegate>
+@interface RMMapView : UIView <UIScrollViewDelegate, RMMapOverlayViewDelegate, RMMapTiledLayerViewDelegate, CLLocationManagerDelegate>
 {
     id <RMMapViewDelegate> delegate;
 
@@ -136,6 +137,10 @@ typedef enum {
 @property (nonatomic, retain) RMTileCache *tileCache;
 
 @property (nonatomic, retain) UIView *backgroundView;
+
+@property (nonatomic, retain) CLLocationManager* locationManager;
+@property (nonatomic, retain) RMAnnotation *locationAnnotation;
+@property (nonatomic, assign) BOOL shouldShowUserLocationMarker;
 
 #pragma mark -
 #pragma mark Initializers

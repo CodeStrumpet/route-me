@@ -45,6 +45,8 @@
 #import "RMMapTiledLayerView.h"
 #import "RMMapOverlayView.h"
 
+#import "RMLocationMarker.h"
+
 #pragma mark --- begin constants ----
 
 #define kiPhoneMilimeteresPerPixel .1543
@@ -102,6 +104,11 @@
     float _lastZoom;
     CGPoint _lastContentOffset, _accumulatedDelta;
     BOOL _mapScrollViewIsZooming;
+    
+    // Location manager & location marker
+    CLLocationManager*  _locationManager;
+    BOOL                _shouldShowUserLocationMarker;
+    RMAnnotation*       _locationAnnotation;
 }
 
 @synthesize decelerationMode;
@@ -113,6 +120,9 @@
 @synthesize quadTree;
 @synthesize enableClustering, positionClusterMarkersAtTheGravityCenter, clusterMarkerSize, clusterAreaSize;
 @synthesize adjustTilesForRetinaDisplay;
+@synthesize locationManager;
+@synthesize locationAnnotation;
+@synthesize shouldShowUserLocationMarker;
 
 #pragma mark -
 #pragma mark Initialization
@@ -273,6 +283,7 @@
     [tileSource cancelAllDownloads]; [tileSource release]; tileSource = nil;
     [projection release]; projection = nil;
     [mercatorToTileProjection release]; mercatorToTileProjection = nil;
+    [_locationManager release], _locationManager = nil;
     [self setTileCache:nil];
     [super dealloc];
 }
@@ -1219,6 +1230,61 @@
 
 #pragma mark -
 #pragma mark Properties
+/**
+ *  Lazy load location annotation marker
+ */
+- (RMAnnotation*)locationAnnotation {
+    @synchronized(self) {
+        if (!_locationAnnotation) {
+            _locationAnnotation = [[RMAnnotation alloc] initWithMapView:self
+                                                             coordinate:self.centerCoordinate
+                                                               andTitle:@""];
+            RMLocationMarker* locationMarker = [[RMLocationMarker alloc] initWithView:self];
+            
+            [_locationAnnotation setLayer:locationMarker];
+            [self addAnnotation:_locationAnnotation];
+            [locationMarker release];
+        }
+        return _locationAnnotation;
+    }
+}
+
+// Flag to show user location marker
+- (BOOL)shouldShowUserLocationMarker {
+    return _shouldShowUserLocationMarker;
+}
+
+// Set flag to show user location marker
+- (void)setShouldShowUserLocationMarker:(BOOL)showUserLocationMarker {
+    _shouldShowUserLocationMarker = showUserLocationMarker;
+    
+    if (_shouldShowUserLocationMarker) { // Show user location marker
+        [self.locationManager setDelegate:self];
+        [self.locationManager startUpdatingLocation];
+    } else { // Hide user location marker
+        
+    }
+}
+
+// Accessor to location manager
+- (CLLocationManager*)locationManager {
+    @synchronized(self) {
+        if (!_locationManager) {
+            _locationManager = [[CLLocationManager alloc] init];
+        }
+        return _locationManager;
+    }
+}
+
+// Setter to location manager
+- (void)setLocationManager:(CLLocationManager *)aLocationManager {
+    @synchronized(self) {
+        if (_locationManager) {
+            [_locationManager release], locationManager = nil;
+        }
+        _locationManager = aLocationManager;
+    }
+}
 
 - (id <RMTileSource>)tileSource
 {
@@ -1675,7 +1741,7 @@
         {
             if (correctAllAnnotations)
             {
-                for (RMAnnotation *annotation in annotations)
+                for (RMAnnotation *annotation in self.annotations)
                 {
                     [self correctScreenPosition:annotation];
 
@@ -1732,7 +1798,9 @@
 
 - (NSArray *)annotations
 {
-    return [annotations allObjects];
+    NSMutableArray* allAnnotations = [[annotations allObjects] mutableCopy];
+    [allAnnotations removeObject:_locationAnnotation];
+    return allAnnotations;
 }
 
 - (void)addAnnotation:(RMAnnotation *)annotation
@@ -1809,16 +1877,17 @@
 {
     @synchronized (annotations)
     {
-        for (RMAnnotation *annotation in annotations)
+        for (RMAnnotation *annotation in self.annotations)
         {
             // Remove the layer from the screen
             annotation.layer = nil;
         }
     }
 
-    [annotations removeAllObjects];
+    [[self.annotations mutableCopy] removeAllObjects];
     [visibleAnnotations removeAllObjects];
     [quadTree removeAllObjects];
+    if (_locationAnnotation) [quadTree addAnnotation:_locationAnnotation];
     [self correctPositionOfAllAnnotations];
 }
 
@@ -1827,4 +1896,12 @@
     [self correctScreenPosition:annotation];
     return annotation.position;
 }
+
+#pragma mark - Location delegates
+
+// User location is updated
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
+    [self.locationAnnotation setCoordinate:newLocation.coordinate];
+}
+
 @end

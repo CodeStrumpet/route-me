@@ -32,6 +32,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		02C15348155C3682007AABD6 /* RMLocationMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C15346155C3681007AABD6 /* RMLocationMarker.h */; };
+		02C15349155C3682007AABD6 /* RMLocationMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 02C15347155C3682007AABD6 /* RMLocationMarker.m */; };
 		126693040EB76C0B00E002D5 /* RMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 126692A00EB75C0A00E002D5 /* RMConfiguration.m */; };
 		1606C9FE13D86BA400547581 /* RMOpenCycleMapSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 1606C9FC13D86BA300547581 /* RMOpenCycleMapSource.h */; };
 		1606C9FF13D86BA400547581 /* RMOpenCycleMapSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 1606C9FD13D86BA300547581 /* RMOpenCycleMapSource.m */; };
@@ -178,6 +180,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02C15346155C3681007AABD6 /* RMLocationMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMLocationMarker.h; sourceTree = "<group>"; };
+		02C15347155C3682007AABD6 /* RMLocationMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMLocationMarker.m; sourceTree = "<group>"; };
 		1266929F0EB75C0A00E002D5 /* RMConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMConfiguration.h; sourceTree = "<group>"; };
 		126692A00EB75C0A00E002D5 /* RMConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMConfiguration.m; sourceTree = "<group>"; };
 		12F2031E0EBB65E9003D7B6B /* RMMapViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMMapViewDelegate.h; sourceTree = "<group>"; };
@@ -580,6 +584,8 @@
 				160EEDAE13D41DEC007C5501 /* RMAnnotation.m */,
 				25757F4D1291C8640083D504 /* RMCircle.h */,
 				25757F4E1291C8640083D504 /* RMCircle.m */,
+				02C15346155C3681007AABD6 /* RMLocationMarker.h */,
+				02C15347155C3682007AABD6 /* RMLocationMarker.m */,
 				B86F26AC0E87442C007A3773 /* RMMapLayer.h */,
 				B8F3FC600EA2B382004D8F85 /* RMMapLayer.m */,
 				B8F3FC620EA2E792004D8F85 /* RMMarker.h */,
@@ -675,6 +681,7 @@
 				DD8CDB4A14E0507100B73EB9 /* RMMapQuestOSMSource.h in Headers */,
 				1607499514E120A100D535F5 /* RMGenericMapSource.h in Headers */,
 				16FFF2CB14E3DBF700A170EC /* RMMapQuestOpenAerialSource.h in Headers */,
+				02C15348155C3682007AABD6 /* RMLocationMarker.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -938,6 +945,7 @@
 				DD8CDB4B14E0507100B73EB9 /* RMMapQuestOSMSource.m in Sources */,
 				1607499614E120A100D535F5 /* RMGenericMapSource.m in Sources */,
 				16FFF2CC14E3DBF700A170EC /* RMMapQuestOpenAerialSource.m in Sources */,
+				02C15349155C3682007AABD6 /* RMLocationMarker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
