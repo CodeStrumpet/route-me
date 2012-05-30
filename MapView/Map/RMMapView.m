@@ -1845,38 +1845,32 @@
         }
     }
     
-    if (enableClustering)
-    {
-        annotation.layer = nil;
-        [self correctPositionOfAllAnnotations];
-    }
-    else
-    {
-        [self correctScreenPosition:annotation];
-        
-        if ([annotation isAnnotationOnScreen] && [overlayView containsSublayer:annotation.layer] && [delegate respondsToSelector:@selector(mapView:layerForAnnotation:)])
-        {
-            
-            RMMapLayer *newLayer = [delegate mapView:self layerForAnnotation:annotation];                        
-            
-            if (newLayer)
-            {
-                RMMapLayer *oldLayer = annotation.layer;
-                
-                //[CATransaction begin];
-                //[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-                
-                [overlayView replaceSublayer:oldLayer with:newLayer];                
-                
-                //[CATransaction commit];
 
-                annotation.layer = newLayer;                
-            }
-        } else {
-            // annotation is not on screen, force a refresh of its layer next time it is on the screen
-            annotation.layer = nil; 
+    [self correctScreenPosition:annotation];
+    
+    if ([annotation isAnnotationOnScreen] && [overlayView containsSublayer:annotation.layer] && [delegate respondsToSelector:@selector(mapView:layerForAnnotation:)])
+    {
+        
+        RMMapLayer *newLayer = [delegate mapView:self layerForAnnotation:annotation];                        
+        
+        if (newLayer)
+        {
+            RMMapLayer *oldLayer = annotation.layer;
+            
+            //[CATransaction begin];
+            //[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+            
+            [overlayView replaceSublayer:oldLayer with:newLayer];                
+            
+            //[CATransaction commit];
+
+            annotation.layer = newLayer;                
         }
+    } else {
+        // annotation is not on screen, force a refresh of its layer next time it is on the screen
+        annotation.layer = nil; 
     }
+
 }
 
 - (void)addAnnotations:(NSArray *)newAnnotations

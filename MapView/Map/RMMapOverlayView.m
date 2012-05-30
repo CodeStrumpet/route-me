@@ -43,19 +43,24 @@
     _lastTranslation = CGPointZero;
     _draggedAnnotation = nil;
 
-    UITapGestureRecognizer *doubleTapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)] autorelease];
-    doubleTapRecognizer.numberOfTapsRequired = 2;
-
     UITapGestureRecognizer *singleTapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)] autorelease];
-    [singleTapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];
-
+    [self addGestureRecognizer:singleTapRecognizer];    
+    
+    
     UIPanGestureRecognizer *panGestureRecognizer = [[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)] autorelease];
     panGestureRecognizer.minimumNumberOfTouches = 1;
     panGestureRecognizer.maximumNumberOfTouches = 1;
-
-    [self addGestureRecognizer:singleTapRecognizer];
-    [self addGestureRecognizer:doubleTapRecognizer];
     [self addGestureRecognizer:panGestureRecognizer];
+
+    
+    // Disable the doubleTapRecognizer to improve single tap performance
+    /*
+    UITapGestureRecognizer *doubleTapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)] autorelease];
+    doubleTapRecognizer.numberOfTapsRequired = 2;
+    
+    [singleTapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];
+    [self addGestureRecognizer:doubleTapRecognizer];
+    */
 
     return self;
 }
