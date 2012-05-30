@@ -1827,7 +1827,13 @@
 
             if (annotation.layer)
             {
-                [overlayView addSublayer:annotation.layer];
+                // TODO there should be a better way to do this then checking every time... 
+                // also location annotation ends up as bottom layer which isn't ideal.
+                if (annotation.numericType == kRMLocationAnnotationNumericType) {  
+                    [overlayView insertSublayer:annotation.layer atIndex:0];
+                } else {
+                    [overlayView addSublayer:annotation.layer];                    
+                }
                 [visibleAnnotations addObject:annotation];
             }
         }
