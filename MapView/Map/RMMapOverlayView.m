@@ -47,11 +47,13 @@
     [self addGestureRecognizer:singleTapRecognizer];    
     
     
+    // Disable the panGestureRecognizer to allow for dragging the map while touch is on top of an overlay
+    /*
     UIPanGestureRecognizer *panGestureRecognizer = [[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)] autorelease];
     panGestureRecognizer.minimumNumberOfTouches = 1;
     panGestureRecognizer.maximumNumberOfTouches = 1;
     [self addGestureRecognizer:panGestureRecognizer];
-
+     */
     
     // Disable the doubleTapRecognizer to improve single tap performance
     /*
@@ -125,8 +127,8 @@
 
     if (!hit || ![hit isKindOfClass:[RMMarker class]])
         return NO;
-
-    return ((RMMarker *)hit).annotation.enabled;
+    
+    return ((RMMarker *)hit).annotation.enabled;   
 }
 
 - (RMAnnotation *)findAnnotationInLayer:(CALayer *)layer

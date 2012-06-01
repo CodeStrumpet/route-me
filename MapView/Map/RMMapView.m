@@ -948,11 +948,6 @@
     CGSize contentSize = CGSizeMake(tileSideLength, tileSideLength); // zoom level 1
 
     mapScrollView = [[RMScrollView alloc] initWithFrame:[self bounds]];
-    for (UIGestureRecognizer *gesture in mapScrollView.gestureRecognizers){
-        if ([gesture isKindOfClass:[UIPanGestureRecognizer class]]){
-            gesture.cancelsTouchesInView = NO;    
-        }
-    }
     mapScrollView.delegate = self;
     mapScrollView.opaque = NO;
     mapScrollView.backgroundColor = [UIColor clearColor];

@@ -15,6 +15,17 @@
 
 @implementation RMScrollView
 
+- (id)initWithFrame:(CGRect)frame {
+    if ((self = [super initWithFrame:frame])) {
+        for (UIGestureRecognizer *gesture in self.gestureRecognizers){
+            if ([gesture isKindOfClass:[UIPanGestureRecognizer class]]){
+                gesture.cancelsTouchesInView = NO;    
+            }
+        }
+    }
+    return self;
+}
+
 - (void)setDelegate:(id<UIScrollViewDelegate>)delegate {
     [super setDelegate:delegate];
     if ([delegate respondsToSelector:@selector(scrollViewDidExperienceUserTouch:)]) {
