@@ -44,4 +44,6 @@
 
 - (void)moveLayersBy:(CGPoint)delta;
 
+- (void)orderLayers;
+
 @end

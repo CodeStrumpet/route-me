@@ -117,6 +117,42 @@
     return contains;
 }
 
+NSInteger layerSort(id num1, id num2, void *context) {
+	if ([num1 isKindOfClass:[RMMarker class]] && [num2 isKindOfClass:[RMMarker class]]) {
+		// if both are markers, order based on vertical map position
+		RMMarker *first = (RMMarker *)num1;
+		RMMarker *second = (RMMarker *)num2;
+        
+		double firstPos = first.annotation.projectedLocation.y;
+		double secondPos = second.annotation.projectedLocation.y;
+        
+		if (firstPos > secondPos) {
+			return NSOrderedAscending;
+		} else if (firstPos < secondPos) {
+			return NSOrderedDescending;
+		} else {
+			return NSOrderedSame;
+		}
+	} else {
+		// if something isnt a marker, send to bottom
+		if ([num1 isKindOfClass:[RMMarker class]]) {
+			return NSOrderedDescending;
+		} else if ([num2 isKindOfClass:[RMMarker class]]) {
+			return NSOrderedAscending;
+		} else {
+			return NSOrderedSame;
+		}
+	}
+}
+
+- (void)orderLayers {
+    NSArray *sortedSublayers = [self.layer.sublayers sortedArrayUsingFunction:layerSort context:NULL];
+    for (CALayer *sublayer in self.layer.sublayers) {
+        sublayer.zPosition = [sortedSublayers indexOfObject:sublayer];
+    }
+}
+
+
 #pragma mark -
 #pragma mark Event handling
 

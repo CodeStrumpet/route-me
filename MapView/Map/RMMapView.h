@@ -233,6 +233,9 @@ typedef enum {
 - (void)removeAnnotations:(NSArray *)annotations;
 - (void)removeAllAnnotations;
 
+- (void)orderAnnotationLayersByLatitude;
+- (void)bringAnnotationLayerToTopOfStack:(RMAnnotation *)annotation;
+
 - (CGPoint)screenCoordinatesForAnnotation:(RMAnnotation *)annotation;
 
 #pragma mark -

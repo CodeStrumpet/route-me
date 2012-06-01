@@ -2015,6 +2015,16 @@
     [self correctPositionOfAllAnnotations];
 }
 
+- (void)orderAnnotationLayersByLatitude {
+    [overlayView orderLayers];
+    [overlayView setNeedsLayout];
+}
+
+- (void)bringAnnotationLayerToTopOfStack:(RMAnnotation *)annotation {
+    annotation.layer.zPosition = [overlayView sublayersCount] + 1;
+    [overlayView setNeedsLayout];
+}
+
 - (CGPoint)screenCoordinatesForAnnotation:(RMAnnotation *)annotation
 {
     [self correctScreenPosition:annotation];
