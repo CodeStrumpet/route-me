@@ -112,6 +112,8 @@
     CLLocationManager*  _locationManager;
     BOOL                _showsUserLocation;
     RMAnnotation*       _locationAnnotation;
+    
+    BOOL _userTouchActive;
 }
 
 @synthesize decelerationMode;
@@ -1007,6 +1009,13 @@
 {
     if (!decelerate && _delegateHasAfterMapMove)
         [delegate afterMapMove:self];
+    
+    if (!decelerate && _userTouchActive) {
+        if (_delegateHasAfterMapTouch) {
+            [delegate afterMapTouch:self];
+        }
+        _userTouchActive = NO;
+    }
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
@@ -1019,6 +1028,13 @@
 {
     if (_delegateHasAfterMapMove)
         [delegate afterMapMove:self];
+    
+    if (_userTouchActive) {
+        if (_delegateHasAfterMapTouch) {
+            [delegate afterMapTouch:self];
+        }
+        _userTouchActive = NO;
+    }
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
@@ -1035,8 +1051,11 @@
 
     [self correctPositionOfAllAnnotations];
     
-    if (_delegateHasAfterMapTouch) {
-        [delegate afterMapTouch:self];
+    if (_userTouchActive) {
+        if (_delegateHasAfterMapTouch) {
+            [delegate afterMapTouch:self];
+        }
+        _userTouchActive = NO;
     }
 }
 
@@ -1049,7 +1068,7 @@
 }
 
 - (void)scrollViewDidExperienceUserTouch:(RMScrollView *)scrollView {
-    NSLog(@"ScrollView experienced user touch");
+    _userTouchActive = YES;
 }
 
 
