@@ -43,17 +43,19 @@
     _lastTranslation = CGPointZero;
     _draggedAnnotation = nil;
 
+    /*
     UITapGestureRecognizer *singleTapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)] autorelease];
     [self addGestureRecognizer:singleTapRecognizer];    
-    
+    */
     
     // Disable the panGestureRecognizer to allow for dragging the map while touch is on top of an overlay
     
+    /*
     UIPanGestureRecognizer *panGestureRecognizer = [[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)] autorelease];
     panGestureRecognizer.minimumNumberOfTouches = 1;
     panGestureRecognizer.maximumNumberOfTouches = 1;
     [self addGestureRecognizer:panGestureRecognizer];
-    
+    */
     
     // Disable the doubleTapRecognizer to improve single tap performance
     /*
@@ -120,6 +122,8 @@
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
+    return NO;  // handle all touch interaction on other layers
+    
     if ([[event touchesForView:self] count] > 1)
         return NO;
 

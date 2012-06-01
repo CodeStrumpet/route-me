@@ -178,7 +178,6 @@
     [self createMapView];
     [self setCenterCoordinate:initialCenterCoordinate animated:NO];
     
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMemoryWarningNotification:)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
@@ -992,6 +991,12 @@
     overlayView.delegate = self;
 
     [self insertSubview:overlayView aboveSubview:mapScrollView];
+    
+    // Add single tap recognizer to capture touches on annotations
+    UITapGestureRecognizer *singleTapRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)] autorelease];
+    singleTapRecognizer.cancelsTouchesInView = NO;
+    singleTapRecognizer.delegate = self;
+    [tiledLayerView addGestureRecognizer:singleTapRecognizer];
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
@@ -1069,6 +1074,41 @@
 
 - (void)scrollViewDidExperienceUserTouch:(RMScrollView *)scrollView {
     _userTouchActive = YES;
+}
+
+
+// Gesture Recognizer
+
+- (void)handleSingleTap:(UIGestureRecognizer *)recognizer
+{
+    CGPoint thePoint = [recognizer locationOfTouch:0 inView:overlayView];
+
+    // Use single tap event to check for annotation taps (allows us to disable check in overlayView and enables user to pan map while touching overlays)
+    BOOL overlayViewEvent = NO;
+    if (_delegateHasTapOnAnnotation) {
+        CALayer *hit = [overlayView.layer hitTest:thePoint];
+        
+        if (hit && [hit isKindOfClass:[RMMarker class]] && ((RMMarker *)hit).annotation.enabled) {
+            overlayViewEvent = YES;
+            [delegate tapOnAnnotation:((RMMarker *)hit).annotation onMap:self];
+        }
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    
+    
+    CGPoint thePoint = [touch locationInView:overlayView];
+    BOOL overlayViewEvent = NO;
+    
+    if (_delegateHasTapOnAnnotation) {
+        CALayer *hit = [overlayView.layer hitTest:thePoint];
+        
+        if (hit && [hit isKindOfClass:[RMMarker class]] && ((RMMarker *)hit).annotation.enabled) {
+            overlayViewEvent = YES;
+        }
+    }
+    return overlayViewEvent;
 }
 
 
