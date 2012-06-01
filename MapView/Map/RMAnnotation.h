@@ -51,6 +51,7 @@
     id userInfo;
     NSString *annotationType;
     int numericType;
+    int annotationClass;
     UIImage  *annotationIcon, *badgeIcon;
     CGPoint   anchorPoint;
 }
@@ -60,6 +61,7 @@
 @property (nonatomic, retain) id userInfo;
 @property (nonatomic, retain) NSString *annotationType;
 @property (nonatomic, assign) int numericType;
+@property (nonatomic, assign) int annotationClass;
 @property (nonatomic, retain) UIImage *annotationIcon;
 @property (nonatomic, retain) UIImage *badgeIcon;
 @property (nonatomic, assign) CGPoint anchorPoint;
@@ -87,6 +89,11 @@
 
 - (BOOL)isAnnotationOnScreen;
 - (BOOL)isAnnotationWithinBounds:(CGRect)bounds;
+
+/* TODO (should we add this?)
+- (void)setUserValue:(id)object key:(id)key;
+- (id)getUserValueForKey:(id)key;
+*/
 
 // Used internally
 @property (nonatomic, retain) RMMapView *mapView;

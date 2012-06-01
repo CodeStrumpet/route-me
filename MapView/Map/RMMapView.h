@@ -140,7 +140,7 @@ typedef enum {
 
 @property (nonatomic, retain) CLLocationManager* locationManager;
 @property (nonatomic, retain) RMAnnotation *locationAnnotation;
-@property (nonatomic, assign) BOOL shouldShowUserLocationMarker;
+@property (nonatomic, assign) BOOL showsUserLocation;
 
 #pragma mark -
 #pragma mark Initializers

@@ -41,6 +41,7 @@
 @synthesize userInfo;
 @synthesize annotationType;
 @synthesize numericType;
+@synthesize annotationClass;
 @synthesize annotationIcon, badgeIcon;
 @synthesize anchorPoint;
 
@@ -69,6 +70,8 @@
     self.quadTreeNode = nil;
 
     self.annotationType    = nil;
+    self.numericType       = NSNotFound;
+    self.annotationClass   = NSNotFound;
     self.annotationIcon    = nil;
     self.badgeIcon         = nil;
     self.anchorPoint       = CGPointZero;

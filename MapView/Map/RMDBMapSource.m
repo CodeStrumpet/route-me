@@ -118,59 +118,7 @@
 }
 
 @synthesize uniqueTilecacheKey;
-@synthesize localDB;
 
--(id)initWithPath:(NSString *)path pathIsInBundle:(BOOL)pathIsInBundle {
-	self = [super init];
-	if (self != nil) {
-		// open the db
-        
-		NSString* fullPath;
-        if (pathIsInBundle) {
-            fullPath = [[NSBundle mainBundle] pathForResource:path ofType:nil];
-        } else {
-            fullPath = path;
-        }
-		NSLog(@"Trying to Open db map source %@", fullPath);
-		self.localDB = [[FMDatabase alloc] initWithPath:fullPath];
-		if ([self.localDB open]) {
-			RMLog(@"Opening db map source %@", path);
-			
-			// get the tile side length
-			tileSideLength = [self getPreferenceAsInt:kTileSideLengthKey];
-			
-			// get the supported zoom levels
-			minZoom = [self getPreferenceAsFloat:kMinZoomKey];
-			maxZoom = [self getPreferenceAsFloat:kMaxZoomKey];
-			
-			// get the coverage area
-			topLeft.latitude = [self getPreferenceAsFloat:kCoverageTopLeftLatitudeKey];
-			topLeft.longitude = [self getPreferenceAsFloat:kCoverageTopLeftLongitudeKey];
-			bottomRight.latitude = [self getPreferenceAsFloat:kCoverageBottomRightLatitudeKey];
-			bottomRight.longitude = [self getPreferenceAsFloat:kCoverageBottomRightLatitudeKey];
-			center.latitude = [self getPreferenceAsFloat:kCoverageCenterLatitudeKey];
-			center.longitude = [self getPreferenceAsFloat:kCoverageCenterLongitudeKey];
-			
-			RMLog(@"Tile size: %d pixel", tileSideLength);
-			RMLog(@"Supported zoom range: %d - %d", minZoom, maxZoom);
-			RMLog(@"Coverage area: (%2.6f,%2.6f) x (%2.6f,%2.6f)", 
-				  topLeft.latitude, 
-				  topLeft.longitude,
-				  bottomRight.latitude, 
-				  bottomRight.longitude);
-			RMLog(@"Center: (%2.6f,%2.6f)", 
-				  center.latitude, 
-				  center.longitude);
-		} else {
-			RMLog(@"Error opening db map source %@", path);
-            [self setLocalDB:nil];
-		}
-		
-		// init the tile projection
-		tileProjection = [[RMFractalTileProjection alloc] initFromProjection:[self projection] tileSideLength:tileSideLength maxZoom:maxZoom minZoom:minZoom];		
-	}
-	return self;
-}
 
 - (id)initWithPath:(NSString *)path
 {
@@ -233,7 +181,6 @@
 
 - (void)dealloc
 {
-    [self setLocalDB:nil];
     [uniqueTilecacheKey release]; uniqueTilecacheKey = nil;
     [queue release]; queue = nil;
 	[super dealloc];

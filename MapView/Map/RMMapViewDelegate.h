@@ -44,6 +44,8 @@
 - (void)beforeMapZoom:(RMMapView *)map;
 - (void)afterMapZoom:(RMMapView *)map;
 
+- (void) afterMapTouch: (RMMapView*) map;
+
 /*
  \brief Tells the delegate that the region displayed by the map view just changed.
  \details This method is called whenever the currently displayed map region changes.

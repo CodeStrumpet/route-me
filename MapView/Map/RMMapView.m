@@ -47,6 +47,8 @@
 
 #import "RMLocationMarker.h"
 
+#import "RMScrollView.h"
+
 #pragma mark --- begin constants ----
 
 #define kiPhoneMilimeteresPerPixel .1543
@@ -97,6 +99,7 @@
     BOOL _delegateHasLayerForAnnotation;
     BOOL _delegateHasWillHideLayerForAnnotation;
     BOOL _delegateHasDidHideLayerForAnnotation;
+    BOOL _delegateHasAfterMapTouch;
 
     BOOL _constrainMovement;
     RMProjectedRect _constrainingProjectedBounds;
@@ -107,7 +110,7 @@
     
     // Location manager & location marker
     CLLocationManager*  _locationManager;
-    BOOL                _shouldShowUserLocationMarker;
+    BOOL                _showsUserLocation;
     RMAnnotation*       _locationAnnotation;
 }
 
@@ -122,7 +125,7 @@
 @synthesize adjustTilesForRetinaDisplay;
 @synthesize locationManager;
 @synthesize locationAnnotation;
-@synthesize shouldShowUserLocationMarker;
+@synthesize showsUserLocation;
 
 #pragma mark -
 #pragma mark Initialization
@@ -172,6 +175,7 @@
 
     [self createMapView];
     [self setCenterCoordinate:initialCenterCoordinate animated:NO];
+    
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMemoryWarningNotification:)
@@ -308,6 +312,7 @@
 	return [NSString stringWithFormat:@"MapView at %.0f,%.0f-%.0f,%.0f", bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height];
 }
 
+
 #pragma mark -
 #pragma mark Delegate
 
@@ -346,6 +351,8 @@
     _delegateHasLayerForAnnotation = [delegate respondsToSelector:@selector(mapView:layerForAnnotation:)];
     _delegateHasWillHideLayerForAnnotation = [delegate respondsToSelector:@selector(mapView:willHideLayerForAnnotation:)];
     _delegateHasDidHideLayerForAnnotation = [delegate respondsToSelector:@selector(mapView:didHideLayerForAnnotation:)];
+    _delegateHasAfterMapTouch = [delegate respondsToSelector:@selector(afterMapTouch:)];
+    
 }
 
 - (id <RMMapViewDelegate>)delegate
@@ -540,6 +547,7 @@
     if (_delegateHasAfterMapMove)
         [delegate afterMapMove:self];
 }
+
 
 #pragma mark -
 #pragma mark Zoom
@@ -939,7 +947,12 @@
     int tileSideLength = [[self tileSource] tileSideLength];
     CGSize contentSize = CGSizeMake(tileSideLength, tileSideLength); // zoom level 1
 
-    mapScrollView = [[UIScrollView alloc] initWithFrame:[self bounds]];
+    mapScrollView = [[RMScrollView alloc] initWithFrame:[self bounds]];
+    for (UIGestureRecognizer *gesture in mapScrollView.gestureRecognizers){
+        if ([gesture isKindOfClass:[UIPanGestureRecognizer class]]){
+            gesture.cancelsTouchesInView = NO;    
+        }
+    }
     mapScrollView.delegate = self;
     mapScrollView.opaque = NO;
     mapScrollView.backgroundColor = [UIColor clearColor];
@@ -1026,6 +1039,10 @@
     _mapScrollViewIsZooming = NO;
 
     [self correctPositionOfAllAnnotations];
+    
+    if (_delegateHasAfterMapTouch) {
+        [delegate afterMapTouch:self];
+    }
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
@@ -1035,6 +1052,11 @@
     if (_delegateHasAfterMapZoom)
         [delegate afterMapZoom:self];
 }
+
+- (void)scrollViewDidExperienceUserTouch:(RMScrollView *)scrollView {
+    NSLog(@"ScrollView experienced user touch");
+}
+
 
 // Overlay
 
@@ -1204,6 +1226,7 @@
         [delegate mapViewRegionDidChange:self];
 }
 
+
 #pragma mark -
 #pragma mark Snapshots
 
@@ -1252,15 +1275,15 @@
 }
 
 // Flag to show user location marker
-- (BOOL)shouldShowUserLocationMarker {
-    return _shouldShowUserLocationMarker;
+- (BOOL)showsUserLocation {
+    return _showsUserLocation;
 }
 
 // Set flag to show user location marker
-- (void)setShouldShowUserLocationMarker:(BOOL)showUserLocationMarker {
-    _shouldShowUserLocationMarker = showUserLocationMarker;
+- (void)setShowsUserLocation:(BOOL)showUserLocationMarker {
+    _showsUserLocation = showUserLocationMarker;
     
-    if (_shouldShowUserLocationMarker) { // Show user location marker
+    if (_showsUserLocation) { // Show user location marker
         [self.locationManager setDelegate:self];
         [self.locationManager startUpdatingLocation];
     } else { // Hide user location marker
@@ -1801,7 +1824,7 @@
 - (NSArray *)annotations
 {
     NSMutableArray* allAnnotations = [[annotations allObjects] mutableCopy];
-    [allAnnotations removeObject:_locationAnnotation];
+    [allAnnotations removeObject:_locationAnnotation]; // is this method ever used by Route-Me internally?  Could this every cause problems?
     return allAnnotations;
 }
 

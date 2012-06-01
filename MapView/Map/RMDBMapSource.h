@@ -34,11 +34,9 @@
     NSString *uniqueTilecacheKey;
 }
 
-@property (nonatomic, retain) FMDatabase *localDB;
 @property (nonatomic, retain) NSString *uniqueTilecacheKey;
 
 -(id)initWithPath:(NSString*)path;
--(id)initWithPath:(NSString *)path pathIsInBundle:(BOOL)pathIsInBundle;
 
 - (CLLocationCoordinate2D)topLeftOfCoverage;
 - (CLLocationCoordinate2D)bottomRightOfCoverage;
