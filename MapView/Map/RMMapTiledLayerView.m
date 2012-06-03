@@ -90,7 +90,7 @@
     CGRect bounds = self.bounds;
     short zoom    = log2(bounds.size.width / rect.size.width);
 
-//    NSLog(@"drawLayer: {{%f,%f},{%f,%f}}", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+    //NSLog(@"drawLayer: {{%f,%f},{%f,%f}}", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
@@ -99,11 +99,38 @@
         int x = floor(rect.origin.x / rect.size.width),
             y = floor(fabs(rect.origin.y / rect.size.height));
 
-//        NSLog(@"Tile @ x:%d, y:%d, zoom:%d", x, y, zoom);
+        //NSLog(@"Tile @ x:%d, y:%d, zoom:%d", x, y, zoom);
 
         UIGraphicsPushContext(context);
 
-        UIImage *tileImage = [[mapView tileSource] imageForTile:RMTileMake(x, y, zoom) inCache:[mapView tileCache]];
+        UIImage *tileImage = nil;
+        
+        
+        tileImage = [[mapView tileSource] imageForTile:RMTileMake(x, y, zoom) inCache:[mapView tileCache]];
+        
+        /* TODO tries to return lower zoom level tiles if tile cannot be found (not yet working)
+        int tileDepth = 3;
+        
+        int currZoom = zoom;
+        
+        
+        while (!tileImage && currZoom >= [[mapView tileSource] minZoom] && currZoom >= zoom - tileDepth) {
+            
+            int currX = x;
+            int currY = y;
+            
+            if (zoom - currZoom > 0) {
+                currX = floor(rect.origin.x / (rect.size.width * (zoom - currZoom)));
+                currY = floor(fabs(rect.origin.y / (rect.size.height * (zoom - currZoom))));
+            }
+
+            
+            tileImage = [[mapView tileSource] imageForTile:RMTileMake(currX, currY, currZoom) inCache:[mapView tileCache]];
+            currZoom--;
+            
+        }
+        */
+        
         [tileImage drawInRect:rect];
 
         UIGraphicsPopContext();
