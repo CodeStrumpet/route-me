@@ -18,7 +18,7 @@
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
         for (UIGestureRecognizer *gesture in self.gestureRecognizers){
-            if ([gesture isKindOfClass:[UIPanGestureRecognizer class]]){
+            if ([gesture isKindOfClass:[UIPanGestureRecognizer class]] || [gesture isKindOfClass:[UIRotationGestureRecognizer class]]){
                 gesture.cancelsTouchesInView = NO;    
             }
         }
