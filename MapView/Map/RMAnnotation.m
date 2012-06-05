@@ -165,6 +165,17 @@
     }
 }
 
+- (void)setAnnotationClass:(int)newAnnotationClass {
+    if (annotationClass != newAnnotationClass) {
+        annotationClass = newAnnotationClass;
+        
+        // only call for a refresh if layer already exists
+        if (layer) {
+            [mapView refreshLayerForAnnotation:self];
+        }
+    }
+}
+
 - (BOOL)isAnnotationWithinBounds:(CGRect)bounds
 {
     if (self.hasBoundingBox)
