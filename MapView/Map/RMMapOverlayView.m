@@ -146,7 +146,13 @@ NSInteger layerSort(id num1, id num2, void *context) {
 }
 
 - (void)orderLayers {
+    
+    // old method...
+    //    self.layer.sublayers = [self.layer.sublayers sortedArrayUsingFunction:layerSort context:NULL];
+
+    // new method
     NSArray *sortedSublayers = [self.layer.sublayers sortedArrayUsingFunction:layerSort context:NULL];
+    
     for (CALayer *sublayer in self.layer.sublayers) {
         sublayer.zPosition = [sortedSublayers indexOfObject:sublayer];
     }
