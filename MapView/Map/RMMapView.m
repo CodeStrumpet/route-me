@@ -1067,6 +1067,8 @@
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
     [self correctPositionOfAllAnnotations];
+    
+    _userTouchActive = YES;
 
     if (_delegateHasAfterMapZoom)
         [delegate afterMapZoom:self];
