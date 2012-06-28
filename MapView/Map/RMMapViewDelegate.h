@@ -40,9 +40,11 @@
 
 - (void)beforeMapMove:(RMMapView *)map;
 - (void)afterMapMove:(RMMapView *)map;
+- (void)mapScrollAnimationEnded:(RMMapView *)map;
 
 - (void)beforeMapZoom:(RMMapView *)map;
 - (void)afterMapZoom:(RMMapView *)map;
+- (void)mapZoomEnded:(RMMapView *)map;
 
 - (void) afterMapTouch: (RMMapView*) map;
 

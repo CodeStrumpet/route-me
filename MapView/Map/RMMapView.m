@@ -100,6 +100,8 @@
     BOOL _delegateHasWillHideLayerForAnnotation;
     BOOL _delegateHasDidHideLayerForAnnotation;
     BOOL _delegateHasAfterMapTouch;
+    BOOL _delegateHasMapScrollAnimationEnded;
+    BOOL _delegateHasMapZoomEnded;
 
     BOOL _constrainMovement;
     RMProjectedRect _constrainingProjectedBounds;
@@ -352,7 +354,10 @@
     _delegateHasLayerForAnnotation = [delegate respondsToSelector:@selector(mapView:layerForAnnotation:)];
     _delegateHasWillHideLayerForAnnotation = [delegate respondsToSelector:@selector(mapView:willHideLayerForAnnotation:)];
     _delegateHasDidHideLayerForAnnotation = [delegate respondsToSelector:@selector(mapView:didHideLayerForAnnotation:)];
+
     _delegateHasAfterMapTouch = [delegate respondsToSelector:@selector(afterMapTouch:)];
+    _delegateHasMapScrollAnimationEnded = [delegate respondsToSelector:@selector(mapScrollAnimationEnded:)];
+    _delegateHasMapZoomEnded = [delegate respondsToSelector:@selector(mapZoomEnded:)];
     
 }
 
@@ -1056,6 +1061,9 @@
 
     [self correctPositionOfAllAnnotations];
     
+    if (_delegateHasMapZoomEnded)
+        [delegate mapZoomEnded:self];
+    
     if (_userTouchActive) {
         if (_delegateHasAfterMapTouch) {
             [delegate afterMapTouch:self];
@@ -1067,11 +1075,14 @@
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
     [self correctPositionOfAllAnnotations];
-    
-    _userTouchActive = YES;
 
     if (_delegateHasAfterMapZoom)
         [delegate afterMapZoom:self];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    if (_delegateHasMapScrollAnimationEnded)
+        [delegate mapScrollAnimationEnded:self];
 }
 
 - (void)scrollViewDidExperienceUserTouch:(RMScrollView *)scrollView {
