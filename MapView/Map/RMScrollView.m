@@ -18,7 +18,7 @@
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
         for (UIGestureRecognizer *gesture in self.gestureRecognizers){
-            if ([gesture isKindOfClass:[UIPanGestureRecognizer class]] || [gesture isKindOfClass:[UIRotationGestureRecognizer class]]){
+            if ([gesture isKindOfClass:[UIPanGestureRecognizer class]] || [gesture isKindOfClass:[UIRotationGestureRecognizer class]] || [gesture isKindOfClass:[UIPinchGestureRecognizer class]]){
                 gesture.cancelsTouchesInView = NO;    
             }
         }
@@ -33,13 +33,21 @@
     }
 }
 
+- (UIView *)hitTest:(CGPoint)hit withEvent:(UIEvent *)event {
+    if (_delegateIsRMScrollViewDelegate) {
+        [(id<RMScrollViewDelegate>) self.delegate scrollViewDidExperienceUserTouch:self];
+    }
 
+    return [super hitTest:hit withEvent:event];
+}
+
+/*
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     if (_delegateIsRMScrollViewDelegate) {
         [(id<RMScrollViewDelegate>) self.delegate scrollViewDidExperienceUserTouch:self];
     }
 }
-
+*/
 /*
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     NSLog(@"Touches ended");
