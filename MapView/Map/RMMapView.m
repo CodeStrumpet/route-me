@@ -130,6 +130,8 @@
 @synthesize locationManager;
 @synthesize locationAnnotation;
 @synthesize showsUserLocation;
+@synthesize missingTilesDepth = _missingTilesDepth;
+@synthesize debugTiles = _debugTiles;
 
 #pragma mark -
 #pragma mark Initialization
@@ -157,6 +159,9 @@
     boundingMask = RMMapMinWidthBound;
     adjustTilesForRetinaDisplay = NO;
 
+    _missingTilesDepth = 0;
+    _debugTiles = NO;
+    
     annotations = [NSMutableSet new];
     visibleAnnotations = [NSMutableSet new];
     [self setQuadTree:[[[RMQuadTree alloc] initWithMapView:self] autorelease]];
@@ -965,7 +970,7 @@
     mapScrollView.maximumZoomScale = exp2f([self maxZoom]);
     mapScrollView.contentOffset = CGPointMake(0.0, 0.0);
 
-    tiledLayerView = [[RMMapTiledLayerView alloc] initWithFrame:CGRectMake(0.0, 0.0, contentSize.width, contentSize.height) mapView:self];
+    tiledLayerView = [[RMMapTiledLayerView alloc] initWithFrame:CGRectMake(0.0, 0.0, contentSize.width, contentSize.height) mapView:self forTileSource:tileSource];
     tiledLayerView.delegate = self;
 
     if (self.adjustTilesForRetinaDisplay && screenScale > 1.0)

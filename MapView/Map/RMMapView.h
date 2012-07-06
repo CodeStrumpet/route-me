@@ -142,6 +142,11 @@ typedef enum {
 @property (nonatomic, retain) RMAnnotation *locationAnnotation;
 @property (nonatomic, assign) BOOL showsUserLocation;
 
+// take missing tiles from lower zoom levels, up to #missingTilesDepth zoom levels (defaults to 0, which disables this feature)
+@property (nonatomic, assign) NSUInteger missingTilesDepth;
+
+@property (nonatomic, assign) BOOL debugTiles;
+
 #pragma mark -
 #pragma mark Initializers
 
