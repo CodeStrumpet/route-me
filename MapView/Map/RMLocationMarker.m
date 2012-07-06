@@ -63,8 +63,9 @@
         [self setMasksToBounds:NO];
         
         innerCircle = [[CALayer alloc] init];        
-        [innerCircle setContents:(id)[UIImage imageNamed:@"blue_position_indicator"].CGImage];
-        [innerCircle setFrame:CGRectMake(0.0f, 0.0f, 10.0f, 10.0f)];
+        UIImage *indicatorImage = [UIImage imageNamed:@"blue_position_indicator"];
+        [innerCircle setContents:(id)indicatorImage.CGImage];
+        [innerCircle setFrame:CGRectMake(0.0f, 0.0f, indicatorImage.size.width, indicatorImage.size.height)];
         [innerCircle setPosition:CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds))];
         
         haloRing = [[CALayer alloc] init];
