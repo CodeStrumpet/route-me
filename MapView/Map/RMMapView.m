@@ -959,6 +959,7 @@
     CGSize contentSize = CGSizeMake(tileSideLength, tileSideLength); // zoom level 1
 
     mapScrollView = [[RMScrollView alloc] initWithFrame:[self bounds]];
+    mapScrollView.delaysContentTouches = YES;
     mapScrollView.delegate = self;
     mapScrollView.opaque = NO;
     mapScrollView.backgroundColor = [UIColor clearColor];

@@ -192,6 +192,9 @@
                     currentTileDepth++;
                     currentZoom = zoom - currentTileDepth;
                 }
+                if (!tileImage) {
+                    tileImage = [RMTileImage errorTile];
+                }
             }
         }
         
