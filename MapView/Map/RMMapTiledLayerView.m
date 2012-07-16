@@ -120,7 +120,7 @@
         y1 = floor(fabs(rect.origin.y / rectSize)),
         y2 = floor(fabs((rect.origin.y + rect.size.height) / rectSize));
         
-        //        NSLog(@"Tiles from x1:%d, y1:%d to x2:%d, y2:%d @ zoom %d", x1, y1, x2, y2, zoom);
+        //NSLog(@"Tiles from x1:%d, y1:%d to x2:%d, y2:%d @ zoom %d", x1, y1, x2, y2, zoom);
         
         if (zoom >= mapView.tileSource.minZoom && zoom <= mapView.tileSource.maxZoom)
         {
@@ -143,14 +143,16 @@
         int x = floor(rect.origin.x / rect.size.width),
         y = floor(fabs(rect.origin.y / rect.size.height));
         
-        //        NSLog(@"Tile @ x:%d, y:%d, zoom:%d", x, y, zoom);
+        //NSLog(@"Tile @ x:%d, y:%d, zoom:%d", x, y, zoom);
         
         UIGraphicsPushContext(context);
         
         UIImage *tileImage = nil;
-        
-        if (zoom >= mapView.tileSource.minZoom && zoom <= mapView.tileSource.maxZoom)
-            tileImage = [mapView.tileSource imageForTile:RMTileMake(x, y, zoom) inCache:[mapView tileCache]];
+                
+        if (zoom >= mapView.tileSource.minZoom && zoom <= mapView.tileSource.maxZoom) {
+            tileImage = [mapView.tileSource imageForTile:RMTileMake(x, y, zoom) 
+                                                 inCache:[mapView tileCache]];
+        }
         
         if ( ! tileImage)
         {
@@ -170,10 +172,14 @@
                     float nextTileX = floor(nextX),
                     nextTileY = floor(nextY);
                     
-                    tileImage = [mapView.tileSource imageForTile:RMTileMake((int)nextTileX, (int)nextTileY, currentZoom) inCache:[mapView tileCache]];
+                    tileImage = [mapView.tileSource imageForTile:RMTileMake((int)nextTileX, (int)nextTileY, currentZoom) 
+                                                         inCache:[mapView tileCache]];
                     
-                    if (tileImage)
-                    {
+                    NSLog(@"Loading tile Image for %f %f", nextTileX, nextTileY);
+                    
+                    if (tileImage) {
+                        NSLog(@"Tile found");
+                        
                         // crop
                         float cropSize = 1.0 / powf(2.0, (float)currentTileDepth);
                         

@@ -225,14 +225,16 @@
 
         if ([result next])
             image = [[[UIImage alloc] initWithData:[result dataForColumnIndex:0]] autorelease];
-        else
-            image = [RMTileImage missingTile];
+        else {
+            //image = [RMTileImage missingTile];
+        }
 
         [result close];
     }];
 
-    if (image)
+    if (image) {
         [tileCache addImage:image forTile:tile withCacheKey:[self uniqueTilecacheKey]];
+    }
 
 	return image;
 }
