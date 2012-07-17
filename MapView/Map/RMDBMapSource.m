@@ -226,7 +226,7 @@
         if ([result next])
             image = [[[UIImage alloc] initWithData:[result dataForColumnIndex:0]] autorelease];
         else {
-            //image = [RMTileImage missingTile];
+            image = [RMTileImage missingTile];
         }
 
         [result close];

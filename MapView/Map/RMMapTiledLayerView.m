@@ -154,7 +154,7 @@
                                                  inCache:[mapView tileCache]];
         }
         
-        if ( ! tileImage)
+        if (!tileImage)
         {
             if (mapView.missingTilesDepth == 0)
             {

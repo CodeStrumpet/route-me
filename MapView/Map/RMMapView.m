@@ -1904,6 +1904,7 @@
 - (NSArray *)annotations
 {
     NSMutableArray* allAnnotations = [[annotations allObjects] mutableCopy];
+    if (_locationAnnotation) [allAnnotations removeObject:_locationAnnotation];
     return allAnnotations;
 }
 
