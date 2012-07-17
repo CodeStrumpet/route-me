@@ -1904,7 +1904,6 @@
 - (NSArray *)annotations
 {
     NSMutableArray* allAnnotations = [[annotations allObjects] mutableCopy];
-    [allAnnotations removeObject:_locationAnnotation]; // is this method ever used by Route-Me internally?  Could this every cause problems?
     return allAnnotations;
 }
 
@@ -2037,7 +2036,6 @@
     [[self.annotations mutableCopy] removeAllObjects];
     [visibleAnnotations removeAllObjects];
     [quadTree removeAllObjects];
-    if (_locationAnnotation) [quadTree addAnnotation:_locationAnnotation];
     [self correctPositionOfAllAnnotations];
 }
 
