@@ -1326,6 +1326,7 @@
 
 #pragma mark -
 #pragma mark Properties
+
 /**
  *  Lazy load location annotation marker
  */
@@ -1340,7 +1341,9 @@
             RMLocationMarker* locationMarker = [[RMLocationMarker alloc] initWithView:self];
             
             [_locationAnnotation setLayer:locationMarker];
+            
             [self addAnnotation:_locationAnnotation];
+            
             [locationMarker release];
         }
         return _locationAnnotation;
@@ -2055,13 +2058,13 @@
 }
 
 #pragma mark - Location delegates
-
-// User location is updated
+/**
+ * User location is updated
+ */
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-    
     // TODO update position when dragging is finished
     if (!mapScrollView.dragging && !mapScrollView.decelerating) {
-        [self.locationAnnotation setCoordinate:newLocation.coordinate];        
+        [self.locationAnnotation setCoordinate:manager.location.coordinate];    
     }
 }
 
