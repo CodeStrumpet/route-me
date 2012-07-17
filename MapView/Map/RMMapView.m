@@ -52,7 +52,7 @@
 #pragma mark --- begin constants ----
 
 #define kiPhoneMilimeteresPerPixel .1543
-#define kZoomRectPixelBuffer 150.0
+#define kZoomRectPixelBuffer 50.0
 
 #define kDefaultInitialLatitude 47.56
 #define kDefaultInitialLongitude 10.22
