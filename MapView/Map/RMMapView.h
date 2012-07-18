@@ -64,7 +64,7 @@ typedef enum {
 @protocol RMTileSource;
 @protocol RMMapTiledLayerViewDelegate;
 
-@interface RMMapView : UIView <UIScrollViewDelegate, RMMapOverlayViewDelegate, RMMapTiledLayerViewDelegate, CLLocationManagerDelegate, UIGestureRecognizerDelegate>
+@interface RMMapView : UIView <UIScrollViewDelegate, RMMapOverlayViewDelegate, RMMapTiledLayerViewDelegate, UIGestureRecognizerDelegate>
 {
     id <RMMapViewDelegate> delegate;
 
@@ -138,7 +138,6 @@ typedef enum {
 
 @property (nonatomic, retain) UIView *backgroundView;
 
-@property (nonatomic, retain) CLLocationManager* locationManager;
 @property (nonatomic, retain) RMAnnotation *locationAnnotation;
 @property (nonatomic, assign) BOOL showsUserLocation;
 
@@ -173,6 +172,8 @@ typedef enum {
 - (void)setCenterProjectedPoint:(RMProjectedPoint)aPoint animated:(BOOL)animated;
 
 - (void)moveBy:(CGSize)delta;
+
+- (void)updateUserLocationMarkerWithLocation:(CLLocation*)location;
 
 #pragma mark -
 #pragma mark Zoom

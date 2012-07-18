@@ -111,9 +111,9 @@
     BOOL _mapScrollViewIsZooming;
     
     // Location manager & location marker
-    CLLocationManager*  _locationManager;
     BOOL                _showsUserLocation;
     RMAnnotation*       _locationAnnotation;
+    CLLocation*         _userLocation;
     
     BOOL _userTouchActive;
 }
@@ -127,7 +127,6 @@
 @synthesize quadTree;
 @synthesize enableClustering, positionClusterMarkersAtTheGravityCenter, clusterMarkerSize, clusterAreaSize;
 @synthesize adjustTilesForRetinaDisplay;
-@synthesize locationManager;
 @synthesize locationAnnotation;
 @synthesize showsUserLocation;
 @synthesize missingTilesDepth = _missingTilesDepth;
@@ -295,7 +294,7 @@
     [tileSource cancelAllDownloads]; [tileSource release]; tileSource = nil;
     [projection release]; projection = nil;
     [mercatorToTileProjection release]; mercatorToTileProjection = nil;
-    [_locationManager release], _locationManager = nil;
+    [_userLocation release], _userLocation = nil;
     [self setTileCache:nil];
     [super dealloc];
 }
@@ -1350,43 +1349,6 @@
     }
 }
 
-// Flag to show user location marker
-- (BOOL)showsUserLocation {
-    return _showsUserLocation;
-}
-
-// Set flag to show user location marker
-- (void)setShowsUserLocation:(BOOL)showUserLocationMarker {
-    _showsUserLocation = showUserLocationMarker;
-    
-    if (_showsUserLocation) { // Show user location marker
-        [self.locationManager setDelegate:self];
-        [self.locationManager startUpdatingLocation];
-    } else { // Hide user location marker
-        
-    }
-}
-
-// Accessor to location manager
-- (CLLocationManager*)locationManager {
-    @synchronized(self) {
-        if (!_locationManager) {
-            _locationManager = [[CLLocationManager alloc] init];
-        }
-        return _locationManager;
-    }
-}
-
-// Setter to location manager
-- (void)setLocationManager:(CLLocationManager *)aLocationManager {
-    @synchronized(self) {
-        if (_locationManager) {
-            [_locationManager release], locationManager = nil;
-        }
-        _locationManager = aLocationManager;
-    }
-}
-
 - (id <RMTileSource>)tileSource
 {
     return [[tileSource retain] autorelease];
@@ -2057,14 +2019,17 @@
 }
 
 #pragma mark - Location delegates
-/**
- * User location is updated
- */
-- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-    // TODO update position when dragging is finished
-    if (!mapScrollView.dragging && !mapScrollView.decelerating) {
-        [self.locationAnnotation setCoordinate:manager.location.coordinate];    
-    }
+// Update location for user location marker
+- (void)updateUserLocationMarkerWithLocation:(CLLocation*)location {
+    if (_userLocation) [_userLocation release], _userLocation = nil;
+    _userLocation = [location retain];
+    
+    // Return if we are not showing user location
+    if (!self.showsUserLocation) return;
+    
+    if (mapScrollView.isZooming || mapScrollView.isDragging) return;
+    
+    [self.locationAnnotation setCoordinate:_userLocation.coordinate];
 }
 
 @end
