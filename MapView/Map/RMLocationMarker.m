@@ -10,6 +10,27 @@
 #import "RMCircle.h"
 #import <QuartzCore/QuartzCore.h>
 
+@interface NoTouchCALayer : CALayer
+@end
+
+@implementation NoTouchCALayer
+- (BOOL)containsPoint:(CGPoint)thePoint {
+    return NO;
+}
+@end
+
+@interface NoTouchCAShapeLayer : CAShapeLayer
+@end
+
+@implementation NoTouchCAShapeLayer
+- (BOOL)containsPoint:(CGPoint)thePoint {
+    return NO;
+}
+@end
+
+
+
+
 @interface RMLocationMarker() {}
 @property (nonatomic, retain) RMMapView* map;
 @end
@@ -62,16 +83,16 @@
         [self setBounds:CGRectMake(0.0f, 0.0f, 50.0f, 50.0f)];
         [self setMasksToBounds:NO];
         
-        innerCircle = [[CALayer alloc] init];        
+        innerCircle = [[NoTouchCALayer alloc] init];        
         UIImage *indicatorImage = [UIImage imageNamed:@"blue_position_indicator"];
         [innerCircle setContents:(id)indicatorImage.CGImage];
         [innerCircle setFrame:CGRectMake(0.0f, 0.0f, indicatorImage.size.width, indicatorImage.size.height)];
         [innerCircle setPosition:CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds))];
         
-        haloRing = [[CALayer alloc] init];
+        haloRing = [[NoTouchCALayer alloc] init];
         [haloRing setFrame:self.bounds];
         
-        ringShape = [[CAShapeLayer alloc] init];
+        ringShape = [[NoTouchCAShapeLayer alloc] init];
         CGMutablePathRef haloRingPath = CGPathCreateMutable();
         CGPathAddEllipseInRect(haloRingPath, nil, haloRing.bounds);
         [ringShape setPath:haloRingPath];
@@ -106,6 +127,10 @@
     [haloRing release], haloRing = nil;
     [self setMap:nil];
     [super dealloc];
+}
+
+- (BOOL)containsPoint:(CGPoint)thePoint {
+    return NO;
 }
 
 @end

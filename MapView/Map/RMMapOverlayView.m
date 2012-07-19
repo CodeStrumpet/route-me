@@ -10,6 +10,7 @@
 #import "RMMarker.h"
 #import "RMAnnotation.h"
 #import "RMPixel.h"
+#import "RMLocationMarker.h"
 
 @interface RMMapOverlayView ()
 
@@ -133,7 +134,16 @@ NSInteger layerSort(id num1, id num2, void *context) {
 		} else {
 			return NSOrderedSame;
 		}
-	} else {
+	} else if ([num1 isKindOfClass:[RMLocationMarker class]] || [num2 isKindOfClass:[RMLocationMarker class]]) {
+		// if is Location annotation, send to top
+		if ([num1 isKindOfClass:[RMMarker class]]) {
+			return NSOrderedAscending;
+		} else if ([num2 isKindOfClass:[RMMarker class]]) {
+			return NSOrderedDescending;
+		} else {
+			return NSOrderedSame;
+		}
+    } else {
 		// if something isnt a marker, send to bottom
 		if ([num1 isKindOfClass:[RMMarker class]]) {
 			return NSOrderedDescending;

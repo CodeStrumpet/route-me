@@ -1770,10 +1770,12 @@
             // Use the zPosition property to order the layer hierarchy
             if (![visibleAnnotations containsObject:annotation])
             {
-                if (![annotation.layer isKindOfClass:[RMMarker class]]) {
+                if ([annotation.layer isKindOfClass:[RMLocationMarker class]]) {
+                    [overlayView addSublayer:annotation.layer];                    
+                } else if (![annotation.layer isKindOfClass:[RMMarker class]]) {
                     [overlayView insertSublayer:annotation.layer atIndex:0];
                 } else {
-                    [overlayView addSublayer:annotation.layer];                    
+                    
                 }
                 [visibleAnnotations addObject:annotation];                
             }
