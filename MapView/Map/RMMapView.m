@@ -1775,7 +1775,7 @@
                 } else if (![annotation.layer isKindOfClass:[RMMarker class]]) {
                     [overlayView insertSublayer:annotation.layer atIndex:0];
                 } else {
-                    
+                    [overlayView addSublayer:annotation.layer];
                 }
                 [visibleAnnotations addObject:annotation];                
             }
