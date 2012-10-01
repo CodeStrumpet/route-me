@@ -116,6 +116,7 @@
     CLLocation*         _userLocation;
     
     BOOL _userTouchActive;
+    BOOL _dragMarker;
 }
 
 @synthesize decelerationMode;
@@ -1007,6 +1008,12 @@
     singleTapRecognizer.cancelsTouchesInView = NO;
     singleTapRecognizer.delegate = self;
     [tiledLayerView addGestureRecognizer:singleTapRecognizer];
+
+	UIPanGestureRecognizer *panRecognizer = [[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)] autorelease];
+	panRecognizer.cancelsTouchesInView = NO;
+	panRecognizer.delegate = self;
+	[mapScrollView addGestureRecognizer:panRecognizer];
+
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
@@ -1096,6 +1103,26 @@
 
 
 // Gesture Recognizer
+
+- (void)handlePan:(UIPanGestureRecognizer *)recognizer {
+	if ((recognizer.state == UIGestureRecognizerStateChanged) || (recognizer.state == UIGestureRecognizerStateBegan)) {
+		CGPoint thePoint = [recognizer locationOfTouch:0 inView:overlayView];
+
+		if (_delegateHasShouldDragMarker &&
+			_delegateHasDidDragMarker) {
+			CALayer *hit = [overlayView.layer hitTest:thePoint];
+
+			if (hit && [hit isKindOfClass:[RMMarker class]] && ((RMMarker *)hit).annotation.enabled) {
+				_dragMarker = YES;
+				[self mapOverlayView:overlayView didDragAnnotation:((RMMarker *)hit).annotation withDelta:thePoint];
+			}
+		}
+	} else {
+		if (_dragMarker && _delegateHasDidEndDragMarker) {
+			[self mapOverlayView:overlayView didEndDragAnnotation:nil];
+		}
+	}
+}
 
 - (void)handleSingleTap:(UIGestureRecognizer *)recognizer
 {
