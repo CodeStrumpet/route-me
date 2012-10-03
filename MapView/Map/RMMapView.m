@@ -117,6 +117,8 @@
     
     BOOL _userTouchActive;
     BOOL _dragMarker;
+    RMAnnotation* _panAnnotation;
+
 }
 
 @synthesize decelerationMode;
@@ -1009,6 +1011,8 @@
     singleTapRecognizer.delegate = self;
     [tiledLayerView addGestureRecognizer:singleTapRecognizer];
 
+    // Add Pan recognizer to support dragging on annotations
+    _panAnnotation = nil;
 	UIPanGestureRecognizer *panRecognizer = [[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)] autorelease];
 	panRecognizer.cancelsTouchesInView = NO;
 	panRecognizer.delegate = self;
@@ -1114,12 +1118,14 @@
 
 			if (hit && [hit isKindOfClass:[RMMarker class]] && ((RMMarker *)hit).annotation.enabled) {
 				_dragMarker = YES;
-				[self mapOverlayView:overlayView didDragAnnotation:((RMMarker *)hit).annotation withDelta:thePoint];
+				_panAnnotation = ((RMMarker *)hit).annotation;
+				[self mapOverlayView:overlayView didDragAnnotation:_panAnnotation withDelta:thePoint];
 			}
 		}
 	} else {
 		if (_dragMarker && _delegateHasDidEndDragMarker) {
-			[self mapOverlayView:overlayView didEndDragAnnotation:nil];
+			_dragMarker = NO;
+			[self mapOverlayView:overlayView didEndDragAnnotation:_panAnnotation];
 		}
 	}
 }
