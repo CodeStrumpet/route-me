@@ -263,10 +263,19 @@
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
 {
-    if (recognizer.state != UIGestureRecognizerStateBegan) return;
-    
-    if ([delegate respondsToSelector:@selector(mapTiledLayerView:longPressAtPoint:)])
-        [delegate mapTiledLayerView:self longPressAtPoint:[recognizer locationInView:mapView]];
+    CGPoint aPoint = [recognizer locationInView:mapView];
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        if ([delegate respondsToSelector:@selector(mapTiledLayerView:longPressAtPoint:)])
+            [delegate mapTiledLayerView:self longPressAtPoint:aPoint];
+    } else if (recognizer.state == UIGestureRecognizerStateChanged) {
+        if ([delegate respondsToSelector:@selector(mapTiledLayerView:longPressAndDrag:)]) {
+            [delegate mapTiledLayerView:self longPressAndDrag:aPoint];
+        }
+    } else {
+        if ([delegate respondsToSelector:@selector(mapTiledLayerView:longPressEnd:)]) {
+            [delegate mapTiledLayerView:self longPressEnd:aPoint];
+        }
+    }
 }
 
 - (void)handleDoubleTap:(UIGestureRecognizer *)recognizer

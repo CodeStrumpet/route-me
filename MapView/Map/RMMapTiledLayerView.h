@@ -19,7 +19,8 @@
 - (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView twoFingerSingleTapAtPoint:(CGPoint)aPoint;
 - (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView twoFingerDoubleTapAtPoint:(CGPoint)aPoint;
 - (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressAtPoint:(CGPoint)aPoint;
-
+- (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressAndDrag:(CGPoint)aPoint;
+- (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressEnd:(CGPoint)aPoint;
 @end
 
 @interface RMMapTiledLayerView : UIView

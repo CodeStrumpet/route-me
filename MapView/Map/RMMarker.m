@@ -33,6 +33,7 @@
 @synthesize label;
 @synthesize textForegroundColor;
 @synthesize textBackgroundColor;
+@synthesize offsetEnabled;
 
 #define defaultMarkerAnchorPoint CGPointMake(0.5, 0.5)
 
@@ -50,7 +51,7 @@
     label = nil;
     textForegroundColor = [UIColor blackColor];
     textBackgroundColor = [UIColor clearColor];
-
+    offsetEnabled = NO;
     return self;
 }
 

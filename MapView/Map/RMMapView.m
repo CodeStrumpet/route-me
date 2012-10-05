@@ -61,6 +61,8 @@
 #define kDefaultMaximumZoomLevel 25.0
 #define kDefaultInitialZoomLevel 13.0
 
+#define kDefaultMarkerOffset 80
+
 #pragma mark --- end constants ----
 
 @interface RMMapView (PrivateMethods)
@@ -94,6 +96,7 @@
     BOOL _delegateHasTapOnLabelForAnnotation;
     BOOL _delegateHasDoubleTapOnLabelForAnnotation;
     BOOL _delegateHasShouldDragMarker;
+    BOOL _delegateHasWillDragMarker;
     BOOL _delegateHasDidDragMarker;
     BOOL _delegateHasDidEndDragMarker;
     BOOL _delegateHasLayerForAnnotation;
@@ -117,6 +120,8 @@
     
     BOOL _userTouchActive;
     BOOL _dragMarker;
+    BOOL _longPressMarker;
+    BOOL _offsetEnabled;
     RMAnnotation* _panAnnotation;
 
 }
@@ -355,6 +360,7 @@
     _delegateHasDoubleTapOnLabelForAnnotation = [delegate respondsToSelector:@selector(doubleTapOnLabelForAnnotation:onMap:)];
 
     _delegateHasShouldDragMarker = [delegate respondsToSelector:@selector(mapView:shouldDragAnnotation:)];
+    _delegateHasWillDragMarker = [delegate respondsToSelector:@selector(mapView:willDragAnnotation:withDelta:)];
     _delegateHasDidDragMarker = [delegate respondsToSelector:@selector(mapView:didDragAnnotation:withDelta:)];
     _delegateHasDidEndDragMarker = [delegate respondsToSelector:@selector(mapView:didEndDragAnnotation:)];
 
@@ -1010,14 +1016,6 @@
     singleTapRecognizer.cancelsTouchesInView = NO;
     singleTapRecognizer.delegate = self;
     [tiledLayerView addGestureRecognizer:singleTapRecognizer];
-
-    // Add Pan recognizer to support dragging on annotations
-    _panAnnotation = nil;
-	UIPanGestureRecognizer *panRecognizer = [[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)] autorelease];
-	panRecognizer.cancelsTouchesInView = NO;
-	panRecognizer.delegate = self;
-	[mapScrollView addGestureRecognizer:panRecognizer];
-
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
@@ -1105,29 +1103,8 @@
     _userTouchActive = YES;
 }
 
-
-// Gesture Recognizer
-
-- (void)handlePan:(UIPanGestureRecognizer *)recognizer {
-	if ((recognizer.state == UIGestureRecognizerStateChanged) || (recognizer.state == UIGestureRecognizerStateBegan)) {
-		CGPoint thePoint = [recognizer locationOfTouch:0 inView:overlayView];
-
-		if (_delegateHasShouldDragMarker &&
-			_delegateHasDidDragMarker) {
-			CALayer *hit = [overlayView.layer hitTest:thePoint];
-
-			if (hit && [hit isKindOfClass:[RMMarker class]] && ((RMMarker *)hit).annotation.enabled) {
-				_dragMarker = YES;
-				_panAnnotation = ((RMMarker *)hit).annotation;
-				[self mapOverlayView:overlayView didDragAnnotation:_panAnnotation withDelta:thePoint];
-			}
-		}
-	} else {
-		if (_dragMarker && _delegateHasDidEndDragMarker) {
-			_dragMarker = NO;
-			[self mapOverlayView:overlayView didEndDragAnnotation:_panAnnotation];
-		}
-	}
+- (CGPoint)applyOffsets:(CGPoint)point {
+   return CGPointMake(point.x, point.y - kDefaultMarkerOffset);
 }
 
 - (void)handleSingleTap:(UIGestureRecognizer *)recognizer
@@ -1229,6 +1206,12 @@
         return NO;
 }
 
+- (void)mapOverlayView:(RMMapOverlayView *)aMapOverlayView willDragAnnotation:(RMAnnotation *)anAnnotation withDelta:(CGPoint)delta
+{
+    if (_delegateHasWillDragMarker)
+        [delegate mapView:self willDragAnnotation:anAnnotation withDelta:delta];
+}
+
 - (void)mapOverlayView:(RMMapOverlayView *)aMapOverlayView didDragAnnotation:(RMAnnotation *)anAnnotation withDelta:(CGPoint)delta
 {
     if (_delegateHasDidDragMarker)
@@ -1273,10 +1256,59 @@
         [delegate singleTapTwoFingersOnMap:self at:aPoint];
 }
 
-- (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressAtPoint:(CGPoint)aPoint
-{
-    if (_delegateHasLongSingleTapOnMap)
-        [delegate longSingleTapOnMap:self at:aPoint];
+- (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressAtPoint:(CGPoint)aPoint {
+	// Tapping and holding the marker
+	if (_delegateHasShouldDragMarker) {
+		CALayer *hit = [overlayView.layer hitTest:aPoint];
+
+		if (hit && [hit isKindOfClass:[RMMarker class]] && ((RMMarker *)hit).annotation.enabled) {
+			NSLog(@"drag marker is YES");
+			_dragMarker = YES;
+			_panAnnotation = ((RMMarker *)hit).annotation;
+			_offsetEnabled = ((RMMarker *)hit).offsetEnabled;
+
+			if (_offsetEnabled) {
+				aPoint = [self applyOffsets:aPoint];
+			}
+
+			if (_delegateHasWillDragMarker) {
+				[delegate mapView:self willDragAnnotation:_panAnnotation withDelta:aPoint];
+			}
+
+			return;
+		}
+	}
+
+	// Long press on any point on map
+	if (_delegateHasLongSingleTapOnMap) {
+		[delegate longSingleTapOnMap:self at:aPoint];
+	}
+}
+
+- (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressAndDrag:(CGPoint)aPoint {
+	if (_dragMarker && _offsetEnabled) {
+		aPoint = [self applyOffsets:aPoint];
+	}
+
+	if (_dragMarker && _delegateHasDidDragMarker) {
+		[delegate mapView:self didDragAnnotation:_panAnnotation withDelta:aPoint];
+	}
+}
+
+- (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressEnd:(CGPoint)aPoint {
+	if (_dragMarker && _delegateHasDidEndDragMarker) {
+		if (_dragMarker && _offsetEnabled) {
+			aPoint = [self applyOffsets:aPoint];
+		}
+
+		[delegate mapView:self didEndDragAnnotation:_panAnnotation];
+		_dragMarker = NO;
+		_panAnnotation = nil;
+	} else {
+		if (_delegateHasAfterMapTouch) {
+			[delegate afterMapTouch:self];
+		}
+	}
 }
 
 // Detect dragging/zooming
