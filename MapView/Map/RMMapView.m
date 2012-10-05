@@ -139,6 +139,7 @@
 @synthesize showsUserLocation;
 @synthesize missingTilesDepth = _missingTilesDepth;
 @synthesize debugTiles = _debugTiles;
+@synthesize offsetEnabled = _offsetEnabled;
 
 #pragma mark -
 #pragma mark Initialization
@@ -1257,19 +1258,16 @@
 }
 
 - (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressAtPoint:(CGPoint)aPoint {
+    if (_offsetEnabled) {
+        aPoint = [self applyOffsets:aPoint];
+    }
 	// Tapping and holding the marker
 	if (_delegateHasShouldDragMarker) {
 		CALayer *hit = [overlayView.layer hitTest:aPoint];
 
 		if (hit && [hit isKindOfClass:[RMMarker class]] && ((RMMarker *)hit).annotation.enabled) {
-			NSLog(@"drag marker is YES");
 			_dragMarker = YES;
 			_panAnnotation = ((RMMarker *)hit).annotation;
-			_offsetEnabled = ((RMMarker *)hit).offsetEnabled;
-
-			if (_offsetEnabled) {
-				aPoint = [self applyOffsets:aPoint];
-			}
 
 			if (_delegateHasWillDragMarker) {
 				[delegate mapView:self willDragAnnotation:_panAnnotation withDelta:aPoint];
@@ -1286,24 +1284,29 @@
 }
 
 - (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressAndDrag:(CGPoint)aPoint {
-	if (_dragMarker && _offsetEnabled) {
+    _dragMarker = YES;
+    
+	if (_offsetEnabled) {
 		aPoint = [self applyOffsets:aPoint];
 	}
 
-	if (_dragMarker && _delegateHasDidDragMarker) {
+	if (_delegateHasDidDragMarker) {
 		[delegate mapView:self didDragAnnotation:_panAnnotation withDelta:aPoint];
 	}
 }
 
 - (void)mapTiledLayerView:(RMMapTiledLayerView *)aTiledLayerView longPressEnd:(CGPoint)aPoint {
 	if (_dragMarker && _delegateHasDidEndDragMarker) {
-		if (_dragMarker && _offsetEnabled) {
+		
+        if (_offsetEnabled) {
 			aPoint = [self applyOffsets:aPoint];
 		}
 
 		[delegate mapView:self didEndDragAnnotation:_panAnnotation];
+        
 		_dragMarker = NO;
 		_panAnnotation = nil;
+        
 	} else {
 		if (_delegateHasAfterMapTouch) {
 			[delegate afterMapTouch:self];

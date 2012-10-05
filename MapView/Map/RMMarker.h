@@ -44,7 +44,6 @@
 @property (nonatomic, retain) UIView  *label;
 @property (nonatomic, retain) UIColor *textForegroundColor;
 @property (nonatomic, retain) UIColor *textBackgroundColor;
-@property (assign) BOOL offsetEnabled;
 
 /// the font used for labels when another font is not explicitly requested; currently [UIFont systemFontOfSize:15]
 + (UIFont *)defaultFont;

@@ -145,6 +145,7 @@ typedef enum {
 @property (nonatomic, assign) NSUInteger missingTilesDepth;
 
 @property (nonatomic, assign) BOOL debugTiles;
+@property (nonatomic, assign) BOOL offsetEnabled;
 
 #pragma mark -
 #pragma mark Initializers
