@@ -61,7 +61,7 @@
 #define kDefaultMaximumZoomLevel 25.0
 #define kDefaultInitialZoomLevel 13.0
 
-#define kDefaultMarkerOffset 80
+#define kDefaultMarkerOffset 40
 
 #pragma mark --- end constants ----
 
