@@ -1324,7 +1324,7 @@
 
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(correctPositionOfAllAnnotations) object:nil];
 
-    if (_constrainMovement && ![self projectedBounds:_constrainingProjectedBounds containsPoint:[self centerProjectedPoint]])
+    if (!_mapScrollViewIsZooming && _constrainMovement && ![self projectedBounds:_constrainingProjectedBounds containsPoint:[self centerProjectedPoint]])
     {
         dispatch_async(dispatch_get_main_queue(), ^{
             [mapScrollView setContentOffset:_lastContentOffset animated:NO];
