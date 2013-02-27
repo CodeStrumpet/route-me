@@ -117,6 +117,7 @@
         [initialAnimation setFillMode:kCAFillModeForwards];
         
         [haloRing addAnimation:initialAnimation forKey:@"initial.animation"];
+        [initialAnimation release];
     }
     
     return self;
