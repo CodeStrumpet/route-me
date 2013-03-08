@@ -173,6 +173,7 @@ typedef enum {
 - (void)setCenterProjectedPoint:(RMProjectedPoint)aPoint animated:(BOOL)animated;
 
 - (void)moveBy:(CGSize)delta;
+- (void)moveBy:(CGSize)delta animated:(BOOL)animated;
 
 - (void)updateUserLocationMarkerWithLocation:(CLLocation*)location;
 

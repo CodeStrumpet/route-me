@@ -554,20 +554,24 @@
 
 // ===
 
-- (void)moveBy:(CGSize)delta
-{
-    if (_delegateHasBeforeMapMove)
-        [delegate beforeMapMove:self];
-
-    CGPoint contentOffset = mapScrollView.contentOffset;
-    contentOffset.x += delta.width;
-    contentOffset.y += delta.height;
-    mapScrollView.contentOffset = contentOffset;
-
-    if (_delegateHasAfterMapMove)
-        [delegate afterMapMove:self];
+- (void)moveBy:(CGSize)delta {
+    [self moveBy:delta animated:NO];
 }
 
+- (void)moveBy:(CGSize)delta animated:(BOOL)animated {
+	if (_delegateHasBeforeMapMove) {
+		[delegate beforeMapMove:self];
+	}
+
+	CGPoint contentOffset = mapScrollView.contentOffset;
+	contentOffset.x += delta.width;
+	contentOffset.y += delta.height;
+    [mapScrollView setContentOffset:contentOffset animated:animated];
+
+	if (_delegateHasAfterMapMove) {
+		[delegate afterMapMove:self];
+	}
+}
 
 #pragma mark -
 #pragma mark Zoom
@@ -1138,6 +1142,10 @@
         }
     }
     return overlayViewEvent;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 
