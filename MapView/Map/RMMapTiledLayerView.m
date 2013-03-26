@@ -175,10 +175,10 @@
                     tileImage = [mapView.tileSource imageForTile:RMTileMake((int)nextTileX, (int)nextTileY, currentZoom) 
                                                          inCache:[mapView tileCache]];
                     
-                    NSLog(@"Loading tile Image for %f %f", nextTileX, nextTileY);
+                    //NSLog(@"Loading tile Image for %f %f", nextTileX, nextTileY);
                     
                     if (tileImage) {
-                        NSLog(@"Tile found");
+                        //NSLog(@"Tile found");
                         
                         // crop
                         float cropSize = 1.0 / powf(2.0, (float)currentTileDepth);
