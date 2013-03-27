@@ -1940,7 +1940,7 @@
 
 - (NSArray *)annotations
 {
-    NSMutableArray* allAnnotations = [[annotations allObjects] mutableCopy];
+    NSMutableArray* allAnnotations = [[[annotations allObjects] mutableCopy] autorelease];
     if (_locationAnnotation) [allAnnotations removeObject:_locationAnnotation];
     return allAnnotations;
 }
@@ -2072,7 +2072,7 @@
         }
     }
 
-    [[self.annotations mutableCopy] removeAllObjects];
+    [[[self.annotations mutableCopy] autorelease] removeAllObjects];
     [visibleAnnotations removeAllObjects];
     [quadTree removeAllObjects];
     [self correctPositionOfAllAnnotations];
