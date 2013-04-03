@@ -52,7 +52,7 @@
 //    RMLog(@"New quadtree node at {(%.0f,%.0f),(%.0f,%.0f)}", aBoundingBox.origin.easting, aBoundingBox.origin.northing, aBoundingBox.size.width, aBoundingBox.size.height);
 
     mapView = aMapView;
-    parentNode = [aParentNode retain];
+    parentNode = aParentNode;
     northWest = northEast = southWest = southEast = nil;
     annotations = [NSMutableArray new];
     boundingBox = aBoundingBox;
@@ -74,7 +74,7 @@
 - (void)dealloc
 {
     mapView = nil;
-
+    
     @synchronized (cachedClusterAnnotation)
     {
         [cachedClusterEnclosedAnnotations release]; cachedClusterEnclosedAnnotations = nil;
@@ -86,6 +86,7 @@
         for (RMAnnotation *annotation in annotations)
         {
             annotation.quadTreeNode = nil;
+            [self removeAnnotation:annotation];
         }
     }
 
@@ -584,8 +585,13 @@
 - (void)dealloc
 {
     mapView = nil;
+    
     [rootNode release]; rootNode = nil;
     [super dealloc];
+}
+
+- (void)removeRootNode {
+    [rootNode release], rootNode = nil;
 }
 
 - (void)addAnnotation:(RMAnnotation *)annotation

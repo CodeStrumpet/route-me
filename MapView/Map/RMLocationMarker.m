@@ -32,7 +32,7 @@
 
 
 @interface RMLocationMarker() {}
-@property (nonatomic, retain) RMMapView* map;
+@property (nonatomic, assign) RMMapView* map;
 @end
 
 @implementation RMLocationMarker {
@@ -111,7 +111,7 @@
         [initialAnimation setDuration:0.85f];
         [initialAnimation setFromValue:[NSNumber numberWithFloat:4.0f]];
         [initialAnimation setToValue:[NSNumber numberWithFloat:0.25f]];
-        [initialAnimation setDelegate:self];
+        //[initialAnimation setDelegate:self];
         [initialAnimation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn]];
         [initialAnimation setRemovedOnCompletion:NO];
         [initialAnimation setFillMode:kCAFillModeForwards];
@@ -124,6 +124,7 @@
 }
 
 - (void)dealloc {
+    [ringShape release], ringShape = nil;
     [innerCircle release], innerCircle = nil;
     [haloRing release], haloRing = nil;
     [self setMap:nil];

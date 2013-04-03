@@ -96,7 +96,7 @@
     self.annotationType = nil;
     self.annotationIcon = nil;
     self.badgeIcon      = nil;
-
+    
     [super dealloc];
 }
 
@@ -114,11 +114,12 @@
 
 - (void)setMapView:(RMMapView *)aMapView
 {
-    [mapView autorelease];
-    mapView = [aMapView retain];
-
-    if (!aMapView)
+    if (!aMapView) {
         self.layer = nil;
+        [mapView release], mapView = nil;
+    } else {
+        [mapView release], mapView = [aMapView retain];
+    }
 }
 
 - (void)setPosition:(CGPoint)aPosition

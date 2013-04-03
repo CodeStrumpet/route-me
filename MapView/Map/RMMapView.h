@@ -240,6 +240,7 @@ typedef enum {
 - (void)removeAnnotation:(RMAnnotation *)annotation;
 - (void)removeAnnotations:(NSArray *)annotations;
 - (void)removeAllAnnotations;
+- (void)removeLocationAnnotation;
 
 - (void)orderAnnotationLayersByLatitude;
 - (void)bringAnnotationLayerToTopOfStack:(RMAnnotation *)annotation;

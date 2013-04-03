@@ -43,8 +43,8 @@
     if (!(self = [super initWithFrame:frame]))
         return nil;
     
-    mapView = [aMapView retain];
-    tileSource = [aTileSource retain];
+    mapView = aMapView;
+    tileSource = aTileSource;
     
     self.userInteractionEnabled = YES;
     self.multipleTouchEnabled = YES;
@@ -91,7 +91,8 @@
     [mapView.tileSource cancelAllDownloads];
     self.layer.contents = nil;
     [mapView.tileSource release]; mapView.tileSource = nil;
-    [mapView release]; mapView = nil;
+    mapView = nil;
+    tileSource = nil;
     [super dealloc];
 }
 

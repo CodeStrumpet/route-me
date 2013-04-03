@@ -144,6 +144,7 @@
 #pragma mark -
 #pragma mark Initialization
 
+
 - (void)performInitializationWithTilesource:(id <RMTileSource>)newTilesource
                            centerCoordinate:(CLLocationCoordinate2D)initialCenterCoordinate
                                   zoomLevel:(float)initialZoomLevel
@@ -177,9 +178,9 @@
     clusterMarkerSize = CGSizeMake(100.0, 100.0);
     clusterAreaSize = CGSizeMake(150.0, 150.0);
 
-    [self setTileCache:[[[RMTileCache alloc] init] autorelease]];
+    //[self setTileCache:[[[RMTileCache alloc] init] autorelease]];
+    [self setTileCache:nil];
     [self setTileSource:newTilesource];
-
     [self setBackgroundView:[[[UIView alloc] initWithFrame:[self bounds]] autorelease]];
     if (backgroundImage)
         self.backgroundView.layer.contents = (id)backgroundImage.CGImage;
@@ -212,7 +213,7 @@
 	coordinate.latitude = kDefaultInitialLatitude;
 	coordinate.longitude = kDefaultInitialLongitude;
 
-    [self performInitializationWithTilesource:[[RMOpenStreetMapSource new] autorelease]
+    [self performInitializationWithTilesource:[[[RMOpenStreetMapSource alloc] init] autorelease]
                              centerCoordinate:coordinate
                                     zoomLevel:kDefaultInitialZoomLevel
                                  maxZoomLevel:kDefaultMaximumZoomLevel
@@ -290,6 +291,13 @@
 {
     LogMethod();
 
+    [_locationAnnotation release], _locationAnnotation = nil;
+    [_userLocation release], _userLocation = nil;
+    
+    [self.quadTree removeRootNode];
+    [self removeAllAnnotations];
+    [self removeAllCachedImages];
+    
     [self setDelegate:nil];
     [self setBackgroundView:nil];
     [self setQuadTree:nil];
@@ -303,7 +311,6 @@
     [tileSource cancelAllDownloads]; [tileSource release]; tileSource = nil;
     [projection release]; projection = nil;
     [mercatorToTileProjection release]; mercatorToTileProjection = nil;
-    [_userLocation release], _userLocation = nil;
     [self setTileCache:nil];
     [super dealloc];
 }
@@ -1000,7 +1007,9 @@
     [mapScrollView addSubview:tiledLayerView];
 
     [mapScrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
-    [mapScrollView setZoomScale:exp2f([self zoom]) animated:NO];
+    
+    CGFloat zoom = self.zoom;
+    [mapScrollView setZoomScale:exp2f(zoom) animated:NO];
 
     _lastZoom = [self zoom];
     _lastContentOffset = mapScrollView.contentOffset;
@@ -1410,13 +1419,10 @@
                                                                andTitle:@""];
             _locationAnnotation.annotationType = kRMLocationAnnotationTypeName;
             _locationAnnotation.numericType = kRMLocationAnnotationNumericType;
-            RMLocationMarker* locationMarker = [[RMLocationMarker alloc] initWithView:self];
             
-            [_locationAnnotation setLayer:locationMarker];
-            
+            //RMLocationMarker* locationMarker = [[[RMLocationMarker alloc] initWithView:self] autorelease];
+            //[_locationAnnotation setLayer:locationMarker];
             [self addAnnotation:_locationAnnotation];
-            
-            [locationMarker release];
         }
         return _locationAnnotation;
     }
@@ -1431,11 +1437,12 @@
 {
     if (tileSource == newTileSource)
         return;
-
-    [tileSource cancelAllDownloads];
-    [tileSource autorelease];
+    
+    if (tileSource) {
+        [tileSource cancelAllDownloads], [tileSource release], tileSource = nil;
+    }
+    
     tileSource = [newTileSource retain];
-
     [projection release];
     projection = [[tileSource projection] retain];
 
@@ -2054,6 +2061,7 @@
             [annotations removeObject:annotation];
             [visibleAnnotations removeObject:annotation];
             [self.quadTree removeAnnotation:annotation];
+            annotation.mapView = nil;
             annotation.layer = nil;
        }
     }
@@ -2069,6 +2077,9 @@
         {
             // Remove the layer from the screen
             annotation.layer = nil;
+            annotation.quadTreeNode = nil;
+            [self.quadTree removeAnnotation:annotation];
+            [self removeAnnotation:annotation];
         }
     }
 
@@ -2076,6 +2087,14 @@
     [visibleAnnotations removeAllObjects];
     [quadTree removeAllObjects];
     [self correctPositionOfAllAnnotations];
+}
+
+- (void)removeLocationAnnotation {
+    if (_locationAnnotation) {
+        [self removeAnnotation:_locationAnnotation];
+        [self.quadTree removeAnnotation:_locationAnnotation];
+        [_locationAnnotation release], _locationAnnotation = nil;
+    }
 }
 
 - (void)orderAnnotationLayersByLatitude {

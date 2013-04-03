@@ -73,6 +73,7 @@ typedef enum {
 - (void)removeAnnotation:(RMAnnotation *)annotation;
 
 - (void)removeAllObjects;
+- (void)removeRootNode;
 
 // Returns all annotations that are either inside of or intersect with boundingBox
 - (NSArray *)annotationsInProjectedRect:(RMProjectedRect)boundingBox;
