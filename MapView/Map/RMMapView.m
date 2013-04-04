@@ -1008,8 +1008,7 @@
 
     [mapScrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
     
-    CGFloat zoom = self.zoom;
-    [mapScrollView setZoomScale:exp2f(zoom) animated:NO];
+    [mapScrollView setZoomScale:exp2f(self.zoom) animated:NO];
 
     _lastZoom = [self zoom];
     _lastContentOffset = mapScrollView.contentOffset;
