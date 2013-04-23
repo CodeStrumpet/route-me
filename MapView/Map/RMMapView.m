@@ -192,7 +192,7 @@
     [self setZoom:initialZoomLevel];
 
     [self createMapView];
-    [self setCenterCoordinate:initialCenterCoordinate animated:NO];
+    //[self setCenterCoordinate:initialCenterCoordinate animated:NO];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMemoryWarningNotification:)
@@ -304,7 +304,7 @@
     [annotations release]; annotations = nil;
     [visibleAnnotations release]; visibleAnnotations = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [tiledLayerView release]; tiledLayerView = nil;
+    tiledLayerView.mapView = nil, tiledLayerView.tileSource = nil, [tiledLayerView release]; tiledLayerView = nil;
     [mapScrollView removeObserver:self forKeyPath:@"contentOffset"];
     [mapScrollView release]; mapScrollView = nil;
     [overlayView release]; overlayView = nil;

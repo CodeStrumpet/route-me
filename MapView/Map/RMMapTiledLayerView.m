@@ -27,6 +27,8 @@
 
 @synthesize delegate;
 @synthesize useSnapshotRenderer;
+@synthesize mapView = mapView;
+@synthesize tileSource = tileSource;
 
 + (Class)layerClass
 {

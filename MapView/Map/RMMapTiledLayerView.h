@@ -29,6 +29,10 @@
 
 @property (nonatomic, assign) BOOL useSnapshotRenderer;
 
+@property (nonatomic, assign) RMMapView *mapView;
+
+@property (nonatomic, assign) id <RMTileSource> tileSource;
+
 - (id)initWithFrame:(CGRect)frame mapView:(RMMapView *)aMapView forTileSource:(id <RMTileSource>)aTileSource;
 
 @end
